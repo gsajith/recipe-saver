@@ -82,15 +82,6 @@ export function RecipeDetail({
     }
   };
 
-  const handleSaveTags = async () => {
-    setIsSaving(true);
-    try {
-      await onTagsUpdate(recipe.id, tags);
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
   const handleKeyPress = async (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       e.preventDefault();

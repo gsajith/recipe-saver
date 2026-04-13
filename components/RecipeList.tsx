@@ -57,11 +57,18 @@ export function RecipeList({
               <h3 className={styles.title}>{recipe.title}</h3>
               {recipe.tags && recipe.tags.length > 0 && (
                 <div className={styles.tags}>
-                  {recipe.tags.map((tag) => (
-                    <span key={tag} className={styles.tag}>
-                      {tag}
+                  {recipe.tags
+                    .filter((tag, index) => index < 2)
+                    .map((tag) => (
+                      <span key={tag} className={styles.tag}>
+                        {tag}
+                      </span>
+                    ))}
+                  {recipe.tags.length > 2 && (
+                    <span className={styles.tag}>
+                      +{recipe.tags.length - 2} more
                     </span>
-                  ))}
+                  )}
                 </div>
               )}
             </div>
