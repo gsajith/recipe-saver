@@ -5,6 +5,7 @@ interface ProvidersProps {
   children: ReactNode;
 }
 
-export function Providers({ children }: ProvidersProps) {
+export async function Providers({ children }: ProvidersProps) {
+  // @ts-ignore ClerkProvider is an async server component
   return <ClerkProvider>{children}</ClerkProvider>;
 }
