@@ -15,18 +15,14 @@ interface RecipeDetailProps {
     cookTime: string | null,
     servings: string | null,
   ) => Promise<void>;
-  onRefetch?: (recipeId: string) => Promise<void>;
   onClose: () => void;
-  debugMode?: boolean;
 }
 
 export function RecipeDetail({
   recipe,
   onTagsUpdate,
   onMetadataUpdate,
-  onRefetch,
   onClose,
-  debugMode = false,
 }: RecipeDetailProps) {
   const tagInputRef = useRef<HTMLInputElement>(null);
   const [tagInput, setTagInput] = useState("");
@@ -37,9 +33,8 @@ export function RecipeDetail({
   const [servings, setServings] = useState(recipe.servings || "");
   const [isEditingMetadata, setIsEditingMetadata] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [isRefetching, setIsRefetching] = useState(false);
 
-  // Sync all state when recipe changes (including refetch updates)
+  // Sync all state when recipe changes
   useEffect(() => {
     setTitle(recipe.title);
     setThumbnailUrl(recipe.thumbnail_url || "");
@@ -130,16 +125,6 @@ export function RecipeDetail({
     }
   };
 
-  const handleRefetch = async () => {
-    if (!onRefetch) return;
-    setIsRefetching(true);
-    try {
-      await onRefetch(recipe.id);
-    } finally {
-      setIsRefetching(false);
-    }
-  };
-
   const displayCookTime = cookTime || "";
   const displayServings = servings || "";
 
@@ -149,15 +134,6 @@ export function RecipeDetail({
         <button className={styles.closeBtn} onClick={onClose} title="Close">
           <X size={20} />
         </button>
-        {onRefetch && debugMode && (
-          <button
-            onClick={handleRefetch}
-            className={styles.refetchBtn}
-            disabled={isRefetching}
-            title="Re-fetch metadata">
-            <RefreshCw size={16} />
-          </button>
-        )}
 
         <div className={styles.header}>
           {recipe.thumbnail_url && (

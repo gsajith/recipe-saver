@@ -10,7 +10,6 @@ import { RecipeDetail } from "@/components/RecipeDetail";
 import { SearchBar } from "@/components/SearchBar";
 import { RecipeWithTags } from "@/lib/types";
 import styles from "./page.module.css";
-import Link from "next/link";
 
 export default function Home() {
   const { user, isLoaded } = useUser();
@@ -25,13 +24,6 @@ export default function Home() {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [allTagsShown, setAllTagsShown] = useState(false);
-  // const [debugMode, setDebugMode] = useState(false);
-
-  // // Detect debug mode via ?debug=true query param
-  // useEffect(() => {
-  //   const params = new URLSearchParams(window.location.search);
-  //   setDebugMode(params.get("debug") === "true");
-  // }, []);
 
   // Fetch recipes when user is loaded
   useEffect(() => {
@@ -224,32 +216,6 @@ export default function Home() {
     }
   };
 
-  const handleRefetch = async (recipeId: string) => {
-    try {
-      const response = await fetch(`/api/recipes/${recipeId}/refetch`, {
-        method: "POST",
-      });
-
-      if (!response.ok) throw new Error("Failed to refetch recipe");
-
-      const updatedRecipe = await response.json();
-
-      setSelectedRecipe((prev) =>
-        prev ? { ...prev, ...updatedRecipe } : null,
-      );
-      setRecipes((prev) => {
-        const updated = prev.map((r) =>
-          r.id === recipeId ? { ...r, ...updatedRecipe } : r,
-        );
-        filterRecipes(updated, searchQuery);
-        return updated;
-      });
-    } catch (error) {
-      console.error("Error refetching recipe:", error);
-      throw error;
-    }
-  };
-
   const handleDeleteRecipe = async (recipeId: string) => {
     try {
       const response = await fetch(`/api/recipes/${recipeId}`, {
@@ -432,9 +398,7 @@ export default function Home() {
           recipe={selectedRecipe}
           onTagsUpdate={handleUpdateTags}
           onMetadataUpdate={handleUpdateMetadata}
-          onRefetch={handleRefetch}
           onClose={() => setSelectedRecipe(null)}
-          // debugMode={debugMode}
         />
       )}
     </div>
