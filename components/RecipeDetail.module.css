@@ -29,7 +29,7 @@
   position: absolute;
   top: 1rem;
   right: 1rem;
-  background: var(--danger);
+  background: var(--primary);
   color: white;
   border: none;
   border-radius: 50%;
@@ -43,7 +43,7 @@
 }
 
 .closeBtn:hover {
-  background: #dc2626;
+  background: var(--primary-dark);
   transform: scale(1.1);
 }
 
@@ -75,7 +75,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  color: var(--primary);
+  color: var(--primary-dark);
   text-decoration: none;
   margin-bottom: 2rem;
   font-weight: 500;
@@ -115,7 +115,7 @@
 .input:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 0 0 3px rgba(200, 108, 68, 0.12);
 }
 
 .addBtn {
@@ -182,7 +182,7 @@
 .saveBtn {
   width: 100%;
   padding: 0.875rem;
-  background: var(--success);
+  background: var(--forest);
   color: white;
   border: none;
   border-radius: var(--radius-md);
@@ -193,7 +193,7 @@
 }
 
 .saveBtn:hover:not(:disabled) {
-  background: #059669;
+  background: #315c37;
   box-shadow: var(--shadow-md);
   transform: translateY(-1px);
 }
@@ -356,6 +356,6 @@
 }
 
 .suggestionBtnActive:hover:not(:disabled) {
-  background: #1d4ed8;
-  border-color: #1d4ed8;
+  background: var(--primary-dark);
+  border-color: var(--primary-dark);
 }

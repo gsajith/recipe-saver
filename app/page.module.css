@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background: var(--background);
+  background: linear-gradient(180deg, rgba(251,242,232,1) 0%, rgba(248,236,225,1) 100%);
 }
 
 .container {
@@ -25,14 +25,16 @@
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  background: linear-gradient(135deg, #f4c2a1 0%, #c9744f 100%);
 }
 
 .authContent {
-  text-align: center;
+  background: var(--forest);
   color: white;
-  padding: 2rem;
+  border-color: var(--forest);
   max-width: 500px;
+  padding: 2rem;
+  border-radius: var(--radius-lg);
 }
 
 .authContent h1 {
@@ -53,7 +55,7 @@
   margin-top: 2rem;
   padding: 0.875rem 2.5rem;
   background: white;
-  color: #2563eb;
+  color: #8a4428;
   text-decoration: none;
   border-radius: var(--radius-lg);
   font-weight: 600;
@@ -76,7 +78,7 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   overflow: hidden;
-  background: var(--surface);
+  background: var(--surface-variant);
 }
 
 .viewToggleBtn {
@@ -92,7 +94,7 @@
 }
 
 .viewToggleBtn:hover {
-  background: var(--surface-variant);
+  background: var(--surface);
   color: var(--text-primary);
 }
 
@@ -102,7 +104,7 @@
 }
 
 .viewToggleBtnActive:hover {
-  background: #1d4ed8;
+  background: var(--primary-dark);
 }
 
 .signInButton:hover {
@@ -158,8 +160,8 @@
 }
 
 .tagFilterBtnActive:hover {
-  background: #1d4ed8;
-  border-color: #1d4ed8;
+  background: var(--forest);
+  border-color: var(--forest);
 }
 
 .showAllBtn {
@@ -178,15 +180,13 @@
   }
 
   .authContent h1 {
-    font-size: 2rem;
-  }
-
-  .tagsFilterContent {
+      text-align: center;
+      color: white;
+      padding: 2rem;
+      max-width: 500px;
     gap: 0.375rem;
-  }
-
-  .tagFilterBtn {
-    padding: 0.4rem 0.75rem;
+      margin-bottom: 1rem;
+      font-weight: 700;
     font-size: 0.85rem;
   }
 }

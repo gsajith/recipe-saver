@@ -27,13 +27,21 @@ export function RecipeItemContent({
   return (
     <>
       {recipe.thumbnail_url && (
-        <img
-          src={recipe.thumbnail_url}
-          alt={recipe.title}
-          className={`${styles.thumbnail} ${
-            viewMode === "list" ? styles.thumbnailList : ""
-          }`}
-        />
+        viewMode === "list" ? (
+          <div className={styles.thumbnailListWrapper}>
+            <img
+              src={recipe.thumbnail_url}
+              alt={recipe.title}
+              className={`${styles.thumbnail} ${styles.thumbnailList}`}
+            />
+          </div>
+        ) : (
+          <img
+            src={recipe.thumbnail_url}
+            alt={recipe.title}
+            className={styles.thumbnail}
+          />
+        )
       )}
 
       <div
