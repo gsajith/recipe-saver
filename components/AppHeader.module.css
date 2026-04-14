@@ -1,0 +1,28 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2.5rem;
+}
+
+
+.logo {
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: clamp(2.25rem, 7vw, 3rem);
+  font-weight: 800;
+  line-height: 0;
+  letter-spacing: -0.025em;
+  color: var(--orange);
+}
+
+.logo:hover {
+  color: var(--orange-dark);
+}
+
+.logo b {
+  color: var(--primary);
+}
+
+.logo b:hover {
+  color: var(--primary-dark);
+}

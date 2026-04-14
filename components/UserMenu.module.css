@@ -83,6 +83,10 @@
   background: var(--surface-variant);
 }
 
+.itemActive {
+  font-weight: 700;
+}
+
 .divider {
   height: 1px;
   background: var(--border);

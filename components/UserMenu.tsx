@@ -1,7 +1,7 @@
 "use client";
 
 import { useUser, useClerk } from "@clerk/nextjs";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import { User, Settings, LogOut, ChevronDown, Home } from "lucide-react";
 import Link from "next/link";
@@ -11,6 +11,7 @@ export function UserMenu() {
   const { user } = useUser();
   const { signOut } = useClerk();
   const router = useRouter();
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -47,21 +48,21 @@ export function UserMenu() {
         <div className={styles.dropdown} role="menu">
           <Link
             href={`/`}
-            className={styles.item}
+            className={`${styles.item} ${pathname === "/" ? styles.itemActive : ""}`}
             onClick={() => setOpen(false)}>
             <Home size={15} />
             Home
           </Link>
           <Link
             href={`/user/${user.id}`}
-            className={styles.item}
+            className={`${styles.item} ${pathname === `/user/${user.id}` ? styles.itemActive : ""}`}
             onClick={() => setOpen(false)}>
             <User size={15} />
             Profile
           </Link>
           <Link
             href="/settings"
-            className={styles.item}
+            className={`${styles.item} ${pathname === "/settings" ? styles.itemActive : ""}`}
             onClick={() => setOpen(false)}>
             <Settings size={15} />
             Settings
