@@ -5,6 +5,8 @@ CREATE TABLE recipes (
   url TEXT NOT NULL,
   title TEXT NOT NULL,
   thumbnail_url TEXT,
+  cook_time TEXT,
+  servings TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT unique_user_url UNIQUE(user_id, url)
@@ -25,64 +27,13 @@ CREATE INDEX idx_recipe_tags_recipe_id ON recipe_tags(recipe_id);
 CREATE INDEX idx_recipe_tags_tag ON recipe_tags(tag);
 
 -- Enable Row Level Security
+-- All server-side API access uses the service role key, which bypasses RLS.
+-- RLS blocks direct anon key access to the database (e.g. from the browser or
+-- anyone who obtains the public anon key).
 ALTER TABLE recipes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE recipe_tags ENABLE ROW LEVEL SECURITY;
 
--- Create policies for recipes
-CREATE POLICY "Users can view their own recipes"
-  ON recipes FOR SELECT
-  USING (user_id = current_user_id());
-
-CREATE POLICY "Users can insert their own recipes"
-  ON recipes FOR INSERT
-  WITH CHECK (user_id = current_user_id());
-
-CREATE POLICY "Users can update their own recipes"
-  ON recipes FOR UPDATE
-  USING (user_id = current_user_id())
-  WITH CHECK (user_id = current_user_id());
-
-CREATE POLICY "Users can delete their own recipes"
-  ON recipes FOR DELETE
-  USING (user_id = current_user_id());
-
--- Helper function to get current user ID from request context
-CREATE OR REPLACE FUNCTION current_user_id() RETURNS text AS $$
-BEGIN
-  RETURN coalesce(
-    current_setting('app.current_user_id', true),
-    current_setting('request.headers.x-user-id', true)
-  );
-END;
-$$ LANGUAGE plpgsql STABLE;
-
--- Create policies for recipe_tags
-CREATE POLICY "Users can view tags for their recipes"
-  ON recipe_tags FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM recipes
-      WHERE recipes.id = recipe_tags.recipe_id
-      AND recipes.user_id = current_user_id()
-    )
-  );
-
-CREATE POLICY "Users can insert tags for their recipes"
-  ON recipe_tags FOR INSERT
-  WITH CHECK (
-    EXISTS (
-      SELECT 1 FROM recipes
-      WHERE recipes.id = recipe_tags.recipe_id
-      AND recipes.user_id = current_user_id()
-    )
-  );
-
-CREATE POLICY "Users can delete tags from their recipes"
-  ON recipe_tags FOR DELETE
-  USING (
-    EXISTS (
-      SELECT 1 FROM recipes
-      WHERE recipes.id = recipe_tags.recipe_id
-      AND recipes.user_id = auth.uid()::text
-    )
-  );
+-- No permissive policies are defined for the anon/public role.
+-- With RLS enabled and no matching policies, all anon key requests are denied.
+-- Authentication and authorization are enforced in the server-side API routes
+-- via Clerk before any Supabase query runs.

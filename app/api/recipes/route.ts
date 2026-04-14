@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
-import { supabase } from "@/lib/supabase";
+import { supabaseServer as supabase } from "@/lib/supabase";
 import { extractRecipeMetadata } from "@/lib/recipeExtractor";
 
 export async function POST(req: NextRequest) {
