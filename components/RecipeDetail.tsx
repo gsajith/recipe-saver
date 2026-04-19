@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { X, Edit2, ExternalLink, Clock, Users, RefreshCw } from "lucide-react";
+import { X, ArrowLeft, Edit2, ExternalLink, Clock, Users, RefreshCw } from "lucide-react";
 import { RecipeWithTags } from "@/lib/types";
 import styles from "./RecipeDetail.module.css";
 
@@ -151,8 +151,14 @@ export function RecipeDetail({
   return (
     <div className={styles.modalOverlay} onClick={onClose}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+        {/* Desktop close button */}
         <button className={styles.closeBtn} onClick={onClose} title="Close">
           <X size={20} />
+        </button>
+        {/* Mobile back button */}
+        <button className={styles.backBtn} onClick={onClose}>
+          <ArrowLeft size={17} />
+          Back
         </button>
 
         <div className={styles.header}>
