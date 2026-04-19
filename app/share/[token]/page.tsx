@@ -16,6 +16,7 @@ interface SharedRecipe {
   servings: string | null;
   tags: string[];
   sharer_username: string | null;
+  sharer_user_id: string;
 }
 
 async function getSharedRecipe(token: string): Promise<SharedRecipe | null> {
@@ -27,16 +28,17 @@ async function getSharedRecipe(token: string): Promise<SharedRecipe | null> {
 
   if (error || !recipe) return null;
 
-  const { data: profile } = await supabase
-    .from("user_profiles")
-    .select("username")
-    .eq("clerk_user_id", recipe.user_id)
-    .single();
-
-  const { data: tagRows } = await supabase
-    .from("recipe_tags")
-    .select("tag")
-    .eq("recipe_id", recipe.id);
+  const [{ data: profile }, { data: tagRows }] = await Promise.all([
+    supabase
+      .from("user_profiles")
+      .select("username")
+      .eq("clerk_user_id", recipe.user_id)
+      .single(),
+    supabase
+      .from("recipe_tags")
+      .select("tag")
+      .eq("recipe_id", recipe.id),
+  ]);
 
   return {
     id: recipe.id,
@@ -47,6 +49,7 @@ async function getSharedRecipe(token: string): Promise<SharedRecipe | null> {
     servings: recipe.servings,
     tags: tagRows?.map((r) => r.tag) ?? [],
     sharer_username: profile?.username ?? null,
+    sharer_user_id: recipe.user_id,
   };
 }
 
@@ -59,12 +62,12 @@ export async function generateMetadata({
   const recipe = await getSharedRecipe(token);
 
   if (!recipe) {
-    return { title: "Recipe not found — Recipe Box" };
+    return { title: "Recipe not found — RecipeBox" };
   }
 
   const sharedBy = recipe.sharer_username
     ? `Shared by @${recipe.sharer_username}`
-    : "Shared via Recipe Box";
+    : "Shared via RecipeBox";
 
   const parts: string[] = [];
   if (recipe.cook_time) parts.push(`⏱ ${recipe.cook_time}`);
@@ -76,13 +79,13 @@ export async function generateMetadata({
 
   const description = [sharedBy, ...parts].join(" · ");
   return {
-    title: `${recipe.title} — Recipe Box`,
+    title: `${recipe.title} — RecipeBox`,
     description,
     openGraph: {
       title: recipe.title,
       description,
       url: `/share/${token}`,
-      siteName: "Recipe Box",
+      siteName: "RecipeBox",
       images: recipe.thumbnail_url
         ? [{ url: recipe.thumbnail_url, alt: recipe.title }]
         : [],
@@ -123,14 +126,14 @@ export default async function SharePage({
 
       <main className={styles.main}>
         <p className={styles.attribution}>
-          {recipe.sharer_username ? (
-            <>
-              <span className={styles.sharerHandle}>@{recipe.sharer_username}</span>
-              {" shared a recipe with you"}
-            </>
-          ) : (
-            "Someone shared a recipe with you"
-          )}
+          <a
+            href={`/user/${recipe.sharer_username ?? recipe.sharer_user_id}`}
+            className={styles.sharerLink}>
+            {recipe.sharer_username
+              ? `@${recipe.sharer_username}`
+              : "A RecipeBox user"}
+          </a>
+          {" shared a recipe with you"}
         </p>
 
         <div className={styles.card}>

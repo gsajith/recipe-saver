@@ -7,11 +7,20 @@ export async function GET(
 ) {
   const { username } = await params;
 
-  const { data: profile, error } = await supabase
+  // Try username first, fall back to clerk_user_id for direct-ID links
+  let { data: profile, error } = await supabase
     .from("user_profiles")
     .select("*")
     .eq("username", username)
     .single();
+
+  if (error || !profile) {
+    ({ data: profile, error } = await supabase
+      .from("user_profiles")
+      .select("*")
+      .eq("clerk_user_id", username)
+      .single());
+  }
 
   if (error || !profile) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });

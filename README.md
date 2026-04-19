@@ -1,4 +1,4 @@
-# 🍳 Recipe Box - save your recipes
+# 🍳 RecipeBox - save your recipes
 
 Save and organize recipes from any website or YouTube video. Automatically extracts recipe titles and thumbnails. Built with Next.js, TypeScript, Clerk, and Supabase.
 

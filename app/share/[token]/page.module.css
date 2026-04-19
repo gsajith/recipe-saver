@@ -30,9 +30,14 @@
   text-align: center;
 }
 
-.sharerHandle {
+.sharerLink {
   font-weight: 700;
   color: var(--primary);
+  text-decoration: none;
+}
+
+.sharerLink:hover {
+  text-decoration: underline;
 }
 
 .card {

@@ -246,7 +246,7 @@ export default function Home() {
     return (
       <div className={styles.landingPage}>
         <nav className={styles.landingNav}>
-          <span className={styles.landingLogo}>Recipe Box</span>
+          <span className={styles.landingLogo}>RecipeBox</span>
           <a href="/sign-in" className={styles.navSignIn}>
             Sign in &rarr;
           </a>
