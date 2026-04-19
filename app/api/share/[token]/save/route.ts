@@ -17,13 +17,19 @@ export async function POST(
     // Look up shared recipe
     const { data: recipe, error } = await supabase
       .from("recipes")
-      .select("id, title, url, thumbnail_url, cook_time, servings")
+      .select("id, title, url, thumbnail_url, cook_time, servings, notes")
       .eq("share_token", token)
       .single();
 
     if (error || !recipe) {
       return NextResponse.json({ error: "Share link not found" }, { status: 404 });
     }
+
+    // Fetch tags
+    const { data: tags } = await supabase
+      .from("recipe_tags")
+      .select("tag")
+      .eq("recipe_id", recipe.id);
 
     // Check if user already has this URL saved
     const { data: existing } = await supabase
@@ -50,6 +56,7 @@ export async function POST(
         thumbnail_url: recipe.thumbnail_url,
         cook_time: recipe.cook_time,
         servings: recipe.servings,
+        notes: recipe.notes ?? null,
       })
       .select()
       .single();
@@ -62,7 +69,17 @@ export async function POST(
       );
     }
 
-    return NextResponse.json(newRecipe, { status: 201 });
+    // Copy tags
+    if (tags && tags.length > 0) {
+      await supabase.from("recipe_tags").insert(
+        tags.map(({ tag }) => ({ recipe_id: newRecipe.id, tag })),
+      );
+    }
+
+    return NextResponse.json(
+      { ...newRecipe, tags: tags?.map((t) => t.tag) ?? [] },
+      { status: 201 },
+    );
   } catch (error) {
     console.error("Error saving shared recipe:", error);
     return NextResponse.json(
