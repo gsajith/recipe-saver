@@ -15,6 +15,7 @@ interface RecipeDetailProps {
     cookTime: string | null,
     servings: string | null,
   ) => Promise<void>;
+  onNotesUpdate?: (recipeId: string, notes: string) => Promise<void>;
   onClose: () => void;
 }
 
@@ -22,6 +23,7 @@ export function RecipeDetail({
   recipe,
   onTagsUpdate,
   onMetadataUpdate,
+  onNotesUpdate,
   onClose,
 }: RecipeDetailProps) {
   const tagInputRef = useRef<HTMLInputElement>(null);
@@ -31,6 +33,9 @@ export function RecipeDetail({
   const [thumbnailUrl, setThumbnailUrl] = useState(recipe.thumbnail_url || "");
   const [cookTime, setCookTime] = useState(recipe.cook_time || "");
   const [servings, setServings] = useState(recipe.servings || "");
+  const [notes, setNotes] = useState(recipe.notes || "");
+  const [isEditingNotes, setIsEditingNotes] = useState(false);
+  const [notesSaveStatus, setNotesSaveStatus] = useState<"" | "saving" | "saved">("");
   const [isEditingMetadata, setIsEditingMetadata] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -40,6 +45,7 @@ export function RecipeDetail({
     setThumbnailUrl(recipe.thumbnail_url || "");
     setCookTime(recipe.cook_time || "");
     setServings(recipe.servings || "");
+    setNotes(recipe.notes || "");
     setTags(recipe.tags || []);
   }, [
     recipe.id,
@@ -47,7 +53,21 @@ export function RecipeDetail({
     recipe.thumbnail_url,
     recipe.cook_time,
     recipe.servings,
+    recipe.notes,
   ]);
+
+  const handleSaveNotes = async () => {
+    setIsEditingNotes(false);
+    if (!onNotesUpdate) return;
+    setNotesSaveStatus("saving");
+    try {
+      await onNotesUpdate(recipe.id, notes);
+      setNotesSaveStatus("saved");
+      setTimeout(() => setNotesSaveStatus(""), 1500);
+    } catch {
+      setNotesSaveStatus("");
+    }
+  };
 
   const mealTypeTags = [
     "breakfast",
@@ -254,6 +274,42 @@ export function RecipeDetail({
               </a>
               <hr className={styles.divider} />
             </>
+          )}
+
+          {isEditingNotes ? (
+            <div className={styles.notesSection}>
+              <textarea
+                autoFocus
+                className={styles.notesTextarea}
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                onBlur={handleSaveNotes}
+                onKeyDown={(e) => {
+                  if (e.key === "Escape") handleSaveNotes();
+                }}
+                placeholder="Add adjustments, substitutions, or personal notes…"
+                rows={3}
+              />
+            </div>
+          ) : notes ? (
+            <div className={styles.notesSection}>
+              <button
+                className={styles.notesDisplay}
+                onClick={() => setIsEditingNotes(true)}
+                title="Edit note">
+                <span className={styles.notesLabel}>Notes</span>
+                <span className={styles.notesText}>{notes}</span>
+                {notesSaveStatus === "saving" && (
+                  <span className={styles.notesSaveStatus}>Saving…</span>
+                )}
+              </button>
+            </div>
+          ) : (
+            <button
+              className={styles.addNoteBtn}
+              onClick={() => setIsEditingNotes(true)}>
+              + Add a note
+            </button>
           )}
 
           <div className={styles.tagsSection}>

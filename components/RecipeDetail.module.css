@@ -336,6 +336,92 @@
   color: var(--text-primary);
 }
 
+.addNoteBtn {
+  display: block;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 0 0 1.25rem;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.addNoteBtn:hover {
+  color: var(--primary);
+}
+
+.notesSection {
+  margin-bottom: 1.25rem;
+}
+
+.notesDisplay {
+  display: block;
+  width: 100%;
+  background: var(--surface-variant);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1rem;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.notesDisplay:hover {
+  border-color: var(--primary);
+}
+
+.notesLabel {
+  display: block;
+  font-weight: 600;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+  margin-bottom: 0.3rem;
+}
+
+.notesText {
+  display: block;
+  font-size: 0.925rem;
+  line-height: 1.55;
+  color: var(--text-primary);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.notesTextarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1.5px solid var(--primary);
+  border-radius: var(--radius-md);
+  font-size: 0.925rem;
+  font-family: var(--font-sans), sans-serif;
+  line-height: 1.55;
+  background: var(--surface);
+  color: var(--text-primary);
+  resize: vertical;
+  box-shadow: 0 0 0 3px rgba(30, 61, 47, 0.1);
+  box-sizing: border-box;
+}
+
+.notesTextarea:focus {
+  outline: none;
+}
+
+.notesTextarea::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+
+.notesSaveStatus {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
 .suggestionsSection {
   margin-bottom: 1.25rem;
 }

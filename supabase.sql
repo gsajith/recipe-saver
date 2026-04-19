@@ -21,6 +21,9 @@ CREATE TABLE recipe_tags (
   CONSTRAINT unique_recipe_tag UNIQUE(recipe_id, tag)
 );
 
+-- Migration: add notes field
+-- ALTER TABLE recipes ADD COLUMN notes TEXT;
+
 -- Create indexes for better query performance
 CREATE INDEX idx_recipes_user_id ON recipes(user_id);
 CREATE INDEX idx_recipe_tags_recipe_id ON recipe_tags(recipe_id);

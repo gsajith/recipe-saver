@@ -1,0 +1,351 @@
+/* ─── Loading ────────────────────────────────────────────────────────────── */
+
+.loading {
+  padding: 4rem 2rem;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 1rem;
+}
+
+/* ─── Page ────────────────────────────────────────────────────────────────── */
+
+.page {
+  padding-top: 1rem;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/*  DESKTOP LAYOUT                                                              */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+/* Mobile header hidden on desktop */
+.mobileHeader {
+  display: none;
+}
+
+/* Wrapper: relative so avatar can be positioned to overlap the card */
+.profileWrapper {
+  position: relative;
+  /* Top padding = how far the avatar overflows above the card.
+     Avatar height 120px, we want ~40px above card → card starts 80px down */
+  padding-top: 2.5rem; /* 40px */
+}
+
+/* ─── Card ────────────────────────────────────────────────────────────────── */
+
+.profileCard {
+  position: relative;
+  background: var(--primary);
+  border-radius: 24px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Yellow accent: a rounded rectangle flush with the top-right corner */
+.accentBlob {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 44%;
+  height: 62%;
+  background: var(--accent);
+  /* top-right follows the card's own radius; bottom-left curves inward */
+  border-top-right-radius: 24px;
+  border-bottom-left-radius: 72px;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ─── Avatar ──────────────────────────────────────────────────────────────── */
+
+.avatarContainer {
+  position: absolute;
+  left: 2.5rem;
+  top: 0;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 5px solid white;
+  z-index: 2;
+  box-shadow: var(--shadow-md);
+  background: var(--surface-variant);
+}
+
+.avatarImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.avatarInitial {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary-dark);
+  color: white;
+  font-size: 2.5rem;
+  font-family: var(--font-serif), Georgia, serif;
+  font-weight: 700;
+}
+
+/* ─── Top row: name + stats ───────────────────────────────────────────────── */
+
+.topRow {
+  display: flex;
+  align-items: center;
+  /* Left padding reserves room for avatar (left: 2.5rem + 120px width + gap) */
+  padding: 1.5rem 2.5rem 1rem 12rem;
+  position: relative;
+  z-index: 1;
+  /* Minimum height ensures the row is tall enough for the avatar */
+  min-height: 105px;
+}
+
+.cardInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.name {
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: white;
+  line-height: 1.15;
+}
+
+.stats {
+  font-size: 0.9rem;
+}
+
+.statBold {
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.statCount {
+  font-weight: 600;
+  color: white;
+}
+
+.statLabel {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.statSep {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.followWrap {
+  margin-top: 0.75rem;
+}
+
+/* ─── Bottom row: badge + fan ─────────────────────────────────────────────── */
+
+.bottomRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0.25rem 2.5rem 1.75rem;
+  position: relative;
+  z-index: 1;
+  gap: 1.5rem;
+}
+
+.recipesBadge {
+  background: var(--orange);
+  color: white;
+  padding: 0.6rem 1.5rem;
+  border-radius: var(--radius-full);
+  font-size: 1rem;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+  box-shadow: var(--shadow-sm);
+}
+
+/* ─── Recipe fan ──────────────────────────────────────────────────────────── */
+
+.recipeFan {
+  position: relative;
+  height: 82px;
+  /* total width = one card + (count-1) offsets */
+  width: calc(60px + (var(--fan-total, 1) - 1) * 36px);
+}
+
+.fanCard {
+  position: absolute;
+  left: calc(var(--i, 0) * 36px);
+  top: 2px;
+  width: 60px;
+  height: 78px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 3px solid white;
+  box-shadow: var(--shadow-sm);
+  background: var(--surface-variant);
+  transform-origin: bottom center;
+  /* Spread: i=0 → -12°, i=4 → +12° */
+  transform: rotate(calc(var(--i, 0) * 6deg - 12deg));
+  /* Later cards sit on top */
+  z-index: calc(var(--i, 0) + 1);
+}
+
+.fanThumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.fanThumbPlaceholder {
+  width: 100%;
+  height: 100%;
+  background: var(--border);
+}
+
+.fanMore {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary-dark);
+  color: white;
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-align: center;
+  line-height: 1.3;
+}
+
+/* ─── Mobile follow button (hidden on desktop) ────────────────────────────── */
+
+.mobileFollowWrap {
+  display: none;
+  justify-content: center;
+  margin-top: 1.25rem;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/*  MOBILE LAYOUT  (≤ 640px)                                                   */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  .page {
+    padding-top: 2rem;
+  }
+
+  /* ── Mobile header: name + stats above the arch card ───────────────────── */
+
+  .mobileHeader {
+    display: block;
+    text-align: center;
+    padding: 0 1.5rem;
+  }
+
+  .mobileHeaderName {
+    font-family: var(--font-serif), Georgia, serif;
+    font-size: 2.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.15;
+    margin-bottom: 0.3rem;
+  }
+
+  .mobileHeaderStats {
+    font-size: 0.9rem;
+  }
+
+  .mobileStatBold {
+    font-weight: 700;
+    color: var(--primary);
+  }
+
+  .mobileStatCount {
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .mobileStatLabel {
+    color: var(--text-secondary);
+  }
+
+  .mobileStatSep {
+    color: var(--border);
+  }
+
+  /* ── Profile wrapper ──────────────────────────────────────────────────── */
+
+  .profileWrapper {
+    /* Avatar (150px) starts at top: 0 of wrapper.
+       Card starts at padding-top below. We want avatar center to sit just
+       above the arch top, so roughly 90px above card → padding-top ≈ 90px */
+    padding-top: 5.5rem; /* 88px */
+    margin-top: 1.5rem;
+  }
+
+  /* ── Card: arch / dome shape ──────────────────────────────────────────── */
+
+  .profileCard {
+    /* Horizontal elliptical curve at top creates the arch */
+    border-radius: 50% 50% 20px 20px / 100px 100px 20px 20px;
+    flex-direction: column;
+    align-items: center;
+    /* Top padding pushes badge below the avatar overlap (150-88=62px into card) */
+    padding-top: 5rem;
+    padding-bottom: 2.5rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+
+  /* No yellow accent on mobile — whole card is dark green */
+  .accentBlob {
+    display: none;
+  }
+
+  /* ── Avatar: centered, bridging header and arch ───────────────────────── */
+
+  .avatarContainer {
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
+    width: 150px;
+    height: 150px;
+    border-width: 6px;
+  }
+
+  /* Desktop name/stats hidden on mobile */
+  .topRow {
+    display: none;
+  }
+
+  /* ── Bottom row: stacked vertically, centered ─────────────────────────── */
+
+  .bottomRow {
+    flex-direction: column;
+    align-items: center;
+    padding: 0 1rem 0;
+    gap: 1.25rem;
+    width: 100%;
+  }
+
+  .recipesBadge {
+    font-size: 1.2rem;
+    padding: 0.7rem 2rem;
+  }
+
+  /* Fan centered */
+  .recipeFan {
+    margin: 0 auto;
+  }
+
+  /* ── Mobile follow button ─────────────────────────────────────────────── */
+
+  .mobileFollowWrap {
+    display: flex;
+  }
+}

@@ -11,6 +11,32 @@ async function resolveUsername(username: string) {
   return data?.clerk_user_id ?? null;
 }
 
+export async function GET(
+  _req: NextRequest,
+  { params }: { params: Promise<{ username: string }> },
+) {
+  const { userId } = await auth();
+  if (!userId) {
+    return NextResponse.json({ isFollowing: false });
+  }
+
+  const { username } = await params;
+  const targetId = await resolveUsername(username);
+
+  if (!targetId) {
+    return NextResponse.json({ isFollowing: false });
+  }
+
+  const { data } = await supabase
+    .from("follows")
+    .select("id")
+    .eq("follower_id", userId)
+    .eq("following_id", targetId)
+    .maybeSingle();
+
+  return NextResponse.json({ isFollowing: !!data });
+}
+
 export async function POST(
   _req: NextRequest,
   { params }: { params: Promise<{ username: string }> },

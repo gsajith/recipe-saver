@@ -6,6 +6,7 @@ export interface Recipe {
   thumbnail_url: string | null;
   cook_time: string | null;
   servings: string | null;
+  notes: string | null;
   created_at: string;
   updated_at: string;
 }
