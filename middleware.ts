@@ -6,6 +6,8 @@ const isPublicRoute = createRouteMatcher([
   "/sign-up(.*)",
   "/user/(.*)",       // public profiles
   "/api/users/(.*)", // public reads; mutations check auth inside handlers
+  "/share/(.*)",     // shared recipe pages (public, no auth required to view)
+  "/api/share/(.*)", // public share data endpoint
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
