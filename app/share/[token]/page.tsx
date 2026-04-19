@@ -68,18 +68,20 @@ export async function generateMetadata({
   const parts: string[] = [];
   if (recipe.cook_time) parts.push(`⏱ ${recipe.cook_time}`);
   if (recipe.servings) parts.push(`👥 ${recipe.servings}`);
+  if (recipe.tags.length > 0) parts.push(recipe.tags.join(", "));
   try {
     parts.push(new URL(recipe.url).hostname.replace(/^www\./, ""));
   } catch {}
 
   const description = [sharedBy, ...parts].join(" · ");
-
   return {
     title: `${recipe.title} — Recipe Box`,
     description,
     openGraph: {
       title: recipe.title,
       description,
+      url: `/share/${token}`,
+      siteName: "Recipe Box",
       images: recipe.thumbnail_url
         ? [{ url: recipe.thumbnail_url, alt: recipe.title }]
         : [],

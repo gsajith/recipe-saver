@@ -16,6 +16,9 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_APP_URL ?? "https://recipe-box-gs.vercel.app"
+  ),
   title: "Recipe Box",
   description: "Save and manage your favorite recipes",
 };
