@@ -11,6 +11,7 @@ interface RecipeDetailProps {
   onMetadataUpdate?: (
     recipeId: string,
     title: string,
+    url: string,
     thumbnailUrl: string | null,
     cookTime: string | null,
     servings: string | null,
@@ -29,6 +30,7 @@ export function RecipeDetail({
   const [tagInput, setTagInput] = useState("");
   const [tags, setTags] = useState<string[]>(recipe.tags || []);
   const [title, setTitle] = useState(recipe.title);
+  const [url, setUrl] = useState(recipe.url);
   const [thumbnailUrl, setThumbnailUrl] = useState(recipe.thumbnail_url || "");
   const [cookTime, setCookTime] = useState(recipe.cook_time || "");
   const [servings, setServings] = useState(recipe.servings || "");
@@ -39,6 +41,7 @@ export function RecipeDetail({
   // Sync all state when recipe changes
   useEffect(() => {
     setTitle(recipe.title);
+    setUrl(recipe.url);
     setThumbnailUrl(recipe.thumbnail_url || "");
     setCookTime(recipe.cook_time || "");
     setServings(recipe.servings || "");
@@ -47,6 +50,7 @@ export function RecipeDetail({
   }, [
     recipe.id,
     recipe.title,
+    recipe.url,
     recipe.thumbnail_url,
     recipe.cook_time,
     recipe.servings,
@@ -119,6 +123,7 @@ export function RecipeDetail({
       await onMetadataUpdate(
         recipe.id,
         title,
+        url,
         thumbnailUrl || null,
         cookTime || null,
         servings || null,
@@ -169,6 +174,16 @@ export function RecipeDetail({
                 />
               </div>
               <div className={styles.formGroup}>
+                <label className={styles.label}>Recipe URL</label>
+                <input
+                  type="text"
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
+                  className={styles.input}
+                  placeholder="https://..."
+                />
+              </div>
+              <div className={styles.formGroup}>
                 <label className={styles.label}>Thumbnail URL</label>
                 <div className={styles.thumbnailInputRow}>
                   <input
@@ -185,25 +200,27 @@ export function RecipeDetail({
                   )}
                 </div>
               </div>
-              <div className={styles.formGroup}>
-                <label className={styles.label}>Cook Time</label>
-                <input
-                  type="text"
-                  value={cookTime}
-                  onChange={(e) => setCookTime(e.target.value)}
-                  className={styles.input}
-                  placeholder="e.g. 30 min, 1 hr 15 min"
-                />
-              </div>
-              <div className={styles.formGroup}>
-                <label className={styles.label}>Servings</label>
-                <input
-                  type="text"
-                  value={servings}
-                  onChange={(e) => setServings(e.target.value)}
-                  className={styles.input}
-                  placeholder="e.g. 4, 4-6 servings"
-                />
+              <div className={styles.formRowTwo}>
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Cook Time</label>
+                  <input
+                    type="text"
+                    value={cookTime}
+                    onChange={(e) => setCookTime(e.target.value)}
+                    className={styles.input}
+                    placeholder="e.g. 30 min"
+                  />
+                </div>
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Servings</label>
+                  <input
+                    type="text"
+                    value={servings}
+                    onChange={(e) => setServings(e.target.value)}
+                    className={styles.input}
+                    placeholder="e.g. 4–6"
+                  />
+                </div>
               </div>
               <div className={styles.formGroup}>
                 <label className={styles.label}>Notes</label>
@@ -226,6 +243,7 @@ export function RecipeDetail({
                   onClick={() => {
                     setIsEditingMetadata(false);
                     setTitle(recipe.title);
+                    setUrl(recipe.url);
                     setThumbnailUrl(recipe.thumbnail_url || "");
                     setCookTime(recipe.cook_time || "");
                     setServings(recipe.servings || "");

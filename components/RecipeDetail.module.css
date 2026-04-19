@@ -281,6 +281,28 @@
   margin-bottom: 0;
 }
 
+.formRowTwo {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 0.875rem;
+}
+
+.formRowTwo .formGroup {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+@media (max-width: 400px) {
+  .formRowTwo {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .formRowTwo .formGroup {
+    margin-bottom: 0.875rem;
+  }
+}
+
 .label {
   display: block;
   font-weight: 600;

@@ -179,6 +179,7 @@ export default function Home() {
   const handleUpdateMetadata = async (
     recipeId: string,
     title: string,
+    url: string,
     thumbnailUrl: string | null,
     cookTime: string | null,
     servings: string | null,
@@ -190,6 +191,7 @@ export default function Home() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           title,
+          url,
           thumbnail_url: thumbnailUrl,
           cook_time: cookTime,
           servings,
