@@ -1,10 +1,10 @@
-/* ─── Loading ────────────────────────────────────────────────────────────── */
+/* ─── Loading ─────────────────────────────────────────────────────────────── */
 
 .loading {
   padding: 4rem 2rem;
   text-align: center;
-  color: var(--text-secondary);
   font-size: 1rem;
+  color: var(--text-secondary);
 }
 
 /* ─── Avatar ──────────────────────────────────────────────────────────────── */
@@ -30,9 +30,9 @@
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
   border: 4px solid white;
   border-radius: 50%;
+  object-fit: cover;
 }
 
 .avatarInitial {
@@ -45,26 +45,26 @@
   border: 4px solid white;
   border-radius: 50%;
   background: var(--primary-dark);
-  color: white;
   font-size: 5.5rem;
   font-weight: 900;
+  color: white;
 }
 
+/* ─── Profile Info ────────────────────────────────────────────────────────── */
 
-/* ─── Profile Info ──────────────────────────────────────────────────────────────── */
 .profileCard {
   position: relative;
+  z-index: 1;
   display: flex;
   align-items: flex-end;
   flex-grow: 1;
   min-height: 200px;
-  overflow: hidden;
   margin-top: 36px;
   margin-inline-start: -55px;
   padding: 1.8rem 2rem 0 4.5rem;
+  overflow: hidden;
   border-radius: 0 200px 0 0 / 0px 200px 0px 0px;
   background: var(--accent);
-  z-index: 1;
 }
 
 .cardInfo {
@@ -83,33 +83,35 @@
   font-family: var(--font-serif), Georgia, serif;
   font-size: clamp(1.5rem, 5.5vw, 3.5rem);
   font-weight: 900;
-  line-height: 1.15;
   font-style: italic;
+  line-height: 1.15;
   color: var(--primary-dark);
 }
 
 .stats {
-  font-size: 1.2rem;
-  color: var(--orange);
   display: flex;
   flex-direction: row;
   gap: 30px;
   font-family: var(--font-serif), Georgia, serif;
+  font-size: 1.2rem;
+  color: var(--orange);
 }
 
 .statCount {
+  font-size: 1.8rem;
   font-weight: 900;
   font-style: italic;
-  font-size: 1.8rem;
 }
 
 .followWrap {
   margin-top: 0.75rem;
 }
 
-/* ─── Bottom row: badge + recipe fan ───────────────────────────────────────────── */
+/* ─── Bottom row: badge + recipe fan ─────────────────────────────────────── */
+
 .bottomRow {
   position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -119,7 +121,6 @@
   padding: 40px;
   border-radius: 0px 0px 64px 64px;
   background: var(--primary);
-  z-index: 1;
 }
 
 .recipesContainer {
@@ -133,6 +134,7 @@
 }
 
 .recipesBadge {
+  z-index: 99;
   width: 100%;
   padding: 0.6rem 1.5rem;
   font-family: var(--font-serif), Georgia, serif;
@@ -140,7 +142,6 @@
   font-weight: 900;
   color: white;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-  z-index: 99;
 }
 
 .recipeFan {
@@ -154,6 +155,7 @@
   position: absolute;
   top: calc(abs((var(--i, 0) - var(--fan-total, 6)/2 + 0.5) * 13px) - 5px);
   left: calc(var(--i, 0) * 80px);
+  z-index: calc(var(--i, 0) + 1);
   width: 150px;
   height: 150px;
   overflow: hidden;
@@ -163,7 +165,6 @@
   box-shadow: var(--shadow-sm);
   transform: rotate(calc((var(--i, 0) - var(--fan-total, 6)/2 + 0.5) * 9deg));
   transform-origin: bottom center;
-  z-index: calc(var(--i, 0) + 1);
 }
 
 .fanThumb {
@@ -185,47 +186,48 @@
   align-items: center;
   justify-content: center;
   background: var(--primary-dark);
-  color: white;
   font-size: 1.8rem;
   font-weight: 900;
   line-height: 1;
   text-align: center;
+  color: white;
 }
 
 @media (max-width: 700px) {
   .profileCard {
-    border-radius: 32px 32px 200px 200px / 32px 32px 200px 200px;
-    padding: 8vw;
-    padding-top: 0px;
-    padding-bottom: 200px;
+    display: flex;
     align-items: flex-start;
     justify-content: center;
     width: 100%;
     margin: 0px;
+    padding: 8vw;
+    padding-top: 0px;
+    padding-bottom: 200px;
+    border-radius: 32px 32px 200px 200px / 32px 32px 200px 200px;
   }
 
   .cardInfo {
-    padding: 32px 4vw;
     height: auto;
+    padding: 32px 4vw;
     border-radius: 0px 0px 32px 32px;
     align-items: center;
   }
 
   .topRowContainer {
-    justify-content: center;
     flex-direction: column-reverse;
+    justify-content: center;
   }
 
   .avatarContainer {
-    box-shadow: none;
     margin-top: -220px;
+    box-shadow: none;
   }
 
-  .bottomRow  {
+  .bottomRow {
     margin: 0px;
+    margin-top: -200px;
     padding-top: 200px;
     border-radius: 200px 200px 32px 32px / 200px 200px 32px 32px;
-    margin-top: -200px;
   }
 
   .stats {
@@ -234,21 +236,21 @@
   }
 
   .name {
-    text-align: center;
     font-size: clamp(2.5rem, 7.5vw, 3.5rem);
+    text-align: center;
   }
 
   .recipeFan {
-    margin-top: 0px;
-    height: 120px;
     width: calc(var(--fan-total, 0) * 70px);
+    height: 120px;
+    margin-top: 0px;
   }
 
   .fanCard {
-    width: 100px;
-    height: 100px;
     top: calc(abs((var(--i, 0) - var(--fan-total, 6)/2 + 0.5) * 16px) - 10px);
     left: calc(var(--i, 0) * 60px);
+    width: 100px;
+    height: 100px;
     transform: rotate(calc((var(--i, 0) - var(--fan-total, 6)/2 + 0.5) * 9deg));
   }
 
