@@ -11,13 +11,6 @@ export interface Recipe {
   updated_at: string;
 }
 
-export interface RecipeTag {
-  id: string;
-  recipe_id: string;
-  tag: string;
-  created_at: string;
-}
-
 export interface RecipeWithTags extends Recipe {
   tags: string[];
 }

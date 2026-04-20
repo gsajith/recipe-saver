@@ -77,24 +77,7 @@ export function RecipeDetail({
   ];
   const difficultyTags = ["easy", "medium", "hard"];
 
-  const handleAddTag = async () => {
-    const newTag = tagInput.trim().toLowerCase();
-    if (newTag && !tags.includes(newTag)) {
-      const updatedTags = [...tags, newTag];
-      setTags(updatedTags);
-      setTagInput("");
-      setIsSaving(true);
-      try {
-        await onTagsUpdate(recipe.id, updatedTags);
-      } finally {
-        setIsSaving(false);
-        tagInputRef.current?.focus();
-      }
-    }
-  };
-
-  const handleRemoveTag = async (tagToRemove: string) => {
-    const updatedTags = tags.filter((tag) => tag !== tagToRemove);
+  const applyTagUpdate = async (updatedTags: string[]) => {
     setTags(updatedTags);
     setIsSaving(true);
     try {
@@ -105,21 +88,23 @@ export function RecipeDetail({
     }
   };
 
-  const handleAddSuggestedTag = async (tag: string) => {
-    if (!tags.includes(tag)) {
-      const updatedTags = [...tags, tag];
-      setTags(updatedTags);
-      setIsSaving(true);
-      try {
-        await onTagsUpdate(recipe.id, updatedTags);
-      } finally {
-        setIsSaving(false);
-        tagInputRef.current?.focus();
-      }
+  const handleAddTag = async () => {
+    const newTag = tagInput.trim().toLowerCase();
+    if (newTag && !tags.includes(newTag)) {
+      setTagInput("");
+      await applyTagUpdate([...tags, newTag]);
     }
   };
 
-  const handleKeyPress = async (e: React.KeyboardEvent) => {
+  const handleRemoveTag = (tagToRemove: string) => {
+    applyTagUpdate(tags.filter((tag) => tag !== tagToRemove));
+  };
+
+  const handleAddSuggestedTag = (tag: string) => {
+    if (!tags.includes(tag)) applyTagUpdate([...tags, tag]);
+  };
+
+  const handleKeyDown = async (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       e.preventDefault();
       await handleAddTag();
@@ -156,9 +141,6 @@ export function RecipeDetail({
     setShareCopied(true);
     setTimeout(() => setShareCopied(false), 2500);
   };
-
-  const displayCookTime = cookTime || "";
-  const displayServings = servings || "";
 
   return (
     <div className={styles.modalOverlay} onClick={onClose}>
@@ -298,21 +280,21 @@ export function RecipeDetail({
                   <Edit2 size={16} />
                 </button>
               </div>
-              {(displayCookTime || displayServings) && (
+              {(cookTime || servings) && (
                 <div className={styles.metaRow}>
-                  {displayCookTime && (
+                  {cookTime && (
                     <span className={styles.metaItem}>
                       <Clock size={12} />
-                      {displayCookTime}
+                      {cookTime}
                     </span>
                   )}
-                  {displayCookTime && displayServings && (
+                  {cookTime && servings && (
                     <span className={styles.metaDot}>·</span>
                   )}
-                  {displayServings && (
+                  {servings && (
                     <span className={styles.metaItem}>
                       <Users size={12} />
-                      {displayServings}
+                      {servings}
                     </span>
                   )}
                 </div>
@@ -381,7 +363,7 @@ export function RecipeDetail({
                 type="text"
                 value={tagInput}
                 onChange={(e) => setTagInput(e.target.value)}
-                onKeyDown={handleKeyPress}
+                onKeyDown={handleKeyDown}
                 placeholder="Add a tag..."
                 className={styles.input}
                 disabled={isSaving}

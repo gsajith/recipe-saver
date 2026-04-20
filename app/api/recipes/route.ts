@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
   try {
     const { userId } = await auth();
 
@@ -69,10 +69,9 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Get all recipes for the user with their tags
     const { data: recipes, error } = await supabase
       .from("recipes")
-      .select("*")
+      .select("*, recipe_tags(tag)")
       .eq("user_id", userId)
       .order("created_at", { ascending: false });
 
@@ -84,20 +83,11 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // Get tags for each recipe
-    const recipesWithTags = await Promise.all(
-      recipes.map(async (recipe) => {
-        const { data: tags } = await supabase
-          .from("recipe_tags")
-          .select("tag")
-          .eq("recipe_id", recipe.id);
-
-        return {
-          ...recipe,
-          tags: tags?.map((t) => t.tag) || [],
-        };
-      }),
-    );
+    const recipesWithTags = (recipes ?? []).map((r) => ({
+      ...r,
+      tags: (r.recipe_tags ?? []).map((t: { tag: string }) => t.tag),
+      recipe_tags: undefined,
+    }));
 
     return NextResponse.json(recipesWithTags);
   } catch (error) {

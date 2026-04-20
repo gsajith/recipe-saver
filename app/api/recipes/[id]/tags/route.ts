@@ -26,7 +26,7 @@ export async function POST(
     // Verify recipe ownership
     const { data: recipe } = await supabase
       .from("recipes")
-      .select("*")
+      .select("id")
       .eq("id", id)
       .eq("user_id", userId)
       .single();

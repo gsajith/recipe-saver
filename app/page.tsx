@@ -83,37 +83,12 @@ export default function Home() {
   };
 
   const getAvailableTags = (): Array<[string, number]> => {
-    // Get all tags from recipes after search filter but before tag filter
-    let tagsMap: { [key: string]: number } = {};
-
-    let searchFiltered = recipes;
-    if (searchQuery.trim()) {
-      const lowerQuery = searchQuery.toLowerCase();
-      searchFiltered = recipes.filter((recipe) => {
-        const matchesTitle = recipe.title.toLowerCase().includes(lowerQuery);
-        const matchesTags = recipe.tags?.some((tag) =>
-          tag.toLowerCase().includes(lowerQuery),
-        );
-        return matchesTitle || matchesTags;
-      });
-    }
-
-    // Apply current tag filters and count available tags
-    let tagFiltered = searchFiltered;
-    if (selectedTags.length > 0) {
-      tagFiltered = searchFiltered.filter((recipe) =>
-        selectedTags.every((tag) => recipe.tags?.includes(tag)),
-      );
-    }
-
-    // Count tags that would still have recipes if selected
-    tagFiltered.forEach((recipe) => {
+    const tagsMap: { [key: string]: number } = {};
+    filteredRecipes.forEach((recipe) => {
       recipe.tags?.forEach((tag) => {
         tagsMap[tag] = (tagsMap[tag] || 0) + 1;
       });
     });
-
-    // Sort by count descending
     return Object.entries(tagsMap).sort((a, b) => b[1] - a[1]);
   };
 
@@ -142,8 +117,6 @@ export default function Home() {
       setRecipes(updatedRecipes);
       filterRecipes(updatedRecipes, searchQuery);
       setSelectedRecipe(newRecipe);
-    } catch (error) {
-      throw error;
     } finally {
       setIsLoading(false);
     }
@@ -360,7 +333,7 @@ export default function Home() {
           <div className={styles.tagsFilter}>
             <div className={styles.tagsFilterContent}>
               {getAvailableTags()
-                .filter((tag, index) => allTagsShown || index < 8)
+                .filter((_tag, index) => allTagsShown || index < 8)
                 .map(([tag]) => (
                   <button
                     key={tag}
