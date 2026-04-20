@@ -102,18 +102,6 @@ export default function ProfilePage() {
 
   return (
     <div>
-      {/* Mobile only: name + stats shown above the arch card */}
-      <div className={styles.mobileHeader}>
-        <h1 className={styles.mobileHeaderName}>{displayName}</h1>
-        <div className={styles.mobileHeaderStats}>
-          <span className={styles.mobileStatBold}>{followerCount}</span>
-          <span className={styles.mobileStatLabel}> followers</span>
-          <span className={styles.mobileStatSep}>&nbsp;&nbsp;</span>
-          <span className={styles.mobileStatCount}>{followingCount}</span>
-          <span className={styles.mobileStatLabel}> following</span>
-        </div>
-      </div>
-
       <div className={styles.topRowContainer}>
         <div className={styles.avatarContainer}>{avatarEl}</div>
         <div className={styles.profileCard}>
