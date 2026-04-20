@@ -15,7 +15,7 @@ interface ProfileData {
   following_count: number;
 }
 
-const MAX_FAN = 4;
+const MAX_FAN = 5;
 
 export default function ProfilePage() {
   const { user, isLoaded } = useUser();
@@ -62,7 +62,8 @@ export default function ProfilePage() {
       .then(([profileData, recipesData, followData]) => {
         const p = profileData as ProfileData & { error?: string };
         if (!p.error) setProfile(p);
-        if (Array.isArray(recipesData)) setRecipes(recipesData as RecipeWithTags[]);
+        if (Array.isArray(recipesData))
+          setRecipes(recipesData as RecipeWithTags[]);
         if (followData) {
           const f = followData as { isFollowing?: boolean };
           setIsFollowing(!!f.isFollowing);
@@ -77,9 +78,10 @@ export default function ProfilePage() {
   }
 
   const isOwnProfile = !targetUsername || targetUsername === myUsername;
-  const displayName = isOwnProfile && user
-    ? (user.fullName || user.firstName || myUsername || "")
-    : (displayUsername || "");
+  const displayName =
+    isOwnProfile && user
+      ? user.fullName || user.firstName || myUsername || ""
+      : displayUsername || "";
   const avatarUrl = isOwnProfile && user ? user.imageUrl : null;
 
   const followerCount = profile?.follower_count ?? 0;
@@ -112,49 +114,50 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      <div className={styles.profileWrapper}>
+      <div className={styles.topRowContainer}>
+        <div className={styles.avatarContainer}>{avatarEl}</div>
         <div className={styles.profileCard}>
-          {/* Yellow accent — top-right corner */}
-          <div className={styles.accentBlob} />
-
-          {/* TOP ROW — avatar space (left) + name/stats (right of avatar) */}
-          <div className={styles.topRow}>
-            <div className={styles.cardInfo}>
-              <h1 className={styles.name}>{displayName}</h1>
-              <div className={styles.stats}>
-                <span className={styles.statBold}>{followerCount}</span>
-                <span className={styles.statLabel}> followers</span>
-                <span className={styles.statSep}>&nbsp;&nbsp;</span>
-                <span className={styles.statCount}>{followingCount}</span>
-                <span className={styles.statLabel}> following</span>
-              </div>
-              {!isOwnProfile && profile && (
-                <div className={styles.followWrap}>
-                  <FollowButton
-                    username={displayUsername!}
-                    initialIsFollowing={isFollowing}
-                  />
-                </div>
-              )}
+          <div className={styles.cardInfo}>
+            <h1 className={styles.name}>{displayName}</h1>
+            <div className={styles.stats}>
+              <span className={styles.statCount}>{followerCount}</span>
+              <span className={styles.statLabel}> followers</span>
+              &nbsp;&nbsp;
+              <span className={styles.statCount}>{followingCount}</span>
+              <span className={styles.statLabel}> following</span>
             </div>
+            {!isOwnProfile && profile && (
+              <div className={styles.followWrap}>
+                <FollowButton
+                  username={displayUsername!}
+                  initialIsFollowing={isFollowing}
+                />
+              </div>
+            )}
           </div>
-
-          {/* BOTTOM ROW — badge (left) + fan cards (right) */}
-          <div className={styles.bottomRow}>
+        </div>
+      </div>
+      <div>
+        {/* BOTTOM ROW — badge (left) + fan cards (right) */}
+        <div className={styles.bottomRow}>
+          <div className={styles.recipesContainer}>
             <div className={styles.recipesBadge}>
               {recipeCount} recipe{recipeCount !== 1 ? "s" : ""} saved
             </div>
             {fanRecipes.length > 0 && (
               <div
                 className={styles.recipeFan}
-                style={{ "--fan-total": fanTotal } as React.CSSProperties}
-              >
+                style={{ "--fan-total": fanTotal } as React.CSSProperties}>
                 {fanRecipes.map((recipe, i) => (
                   <div
                     key={recipe.id}
                     className={styles.fanCard}
-                    style={{ "--i": i } as React.CSSProperties}
-                  >
+                    style={
+                      {
+                        "--i": i,
+                        "--fan-total": fanTotal,
+                      } as React.CSSProperties
+                    }>
                     {recipe.thumbnail_url ? (
                       <img
                         src={recipe.thumbnail_url}
@@ -169,8 +172,12 @@ export default function ProfilePage() {
                 {extraCount > 0 && (
                   <div
                     className={`${styles.fanCard} ${styles.fanMore}`}
-                    style={{ "--i": fanRecipes.length } as React.CSSProperties}
-                  >
+                    style={
+                      {
+                        "--i": fanRecipes.length,
+                        "--fan-total": fanTotal,
+                      } as React.CSSProperties
+                    }>
                     +{extraCount}
                     <br />
                     more
@@ -180,9 +187,6 @@ export default function ProfilePage() {
             )}
           </div>
         </div>
-
-        {/* Avatar — sits outside the card so it can overflow the top edge */}
-        <div className={styles.avatarContainer}>{avatarEl}</div>
       </div>
 
       {/* Mobile only: follow button below card */}
