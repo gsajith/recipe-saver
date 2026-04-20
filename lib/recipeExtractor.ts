@@ -24,6 +24,11 @@ export async function extractRecipeMetadata(
       return await extractYouTubeMetaWithTitle(urlObj);
     }
 
+    // Check if it's an Instagram URL
+    if (isInstagramUrl(urlObj)) {
+      return await extractInstagramMeta(urlObj);
+    }
+
     // For recipe websites, use Open Graph meta tags
     return await extractOpenGraphMeta(url);
   } catch (error) {
@@ -115,6 +120,80 @@ async function extractYouTubeTitle(videoId: string): Promise<string> {
     console.error("Error extracting YouTube title:", error);
     return "YouTube Video";
   }
+}
+
+export function isInstagramUrl(url: URL): boolean {
+  return url.hostname.includes("instagram.com");
+}
+
+/** Return a human-readable name for the Instagram URL based on its path pattern */
+function instagramTitle(url: URL): string {
+  const path = url.pathname;
+  if (path.startsWith("/reels/") || path.startsWith("/reel/")) {
+    return "Instagram Reel";
+  }
+  if (path.startsWith("/tv/")) {
+    return "Instagram Video";
+  }
+  if (path.startsWith("/p/")) {
+    return "Instagram Post";
+  }
+  // /username/... — story or profile-level link
+  return "Instagram Post";
+}
+
+async function extractInstagramMeta(url: URL): Promise<RecipeMetadata> {
+  const title = instagramTitle(url);
+
+  // Try the /embed/ endpoint — Instagram serves it without login and it
+  // contains og:image / a <video poster> we can use as the thumbnail.
+  const embedUrl = `${url.origin}${url.pathname.replace(/\/?$/, "/embed/")}`;
+
+  const headers = {
+    "User-Agent":
+      "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
+    Accept:
+      "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Accept-Encoding": "gzip, deflate, br",
+    Connection: "keep-alive",
+    "Upgrade-Insecure-Requests": "1",
+  };
+
+  let thumbnailUrl: string | null = null;
+
+  // 1. Try the embed page
+  try {
+    const { data } = await axios.get(embedUrl, { headers, timeout: 15000 });
+    const $ = cheerio.load(data);
+    thumbnailUrl =
+      $('meta[property="og:image"]').attr("content") ||
+      $("video").attr("poster") ||
+      $("img").first().attr("src") ||
+      null;
+  } catch {
+    // embed fetch failed, fall through
+  }
+
+  // 2. Try the canonical URL directly
+  if (!thumbnailUrl) {
+    try {
+      const { data } = await axios.get(url.href, {
+        headers,
+        timeout: 15000,
+        maxRedirects: 5,
+      });
+      const $ = cheerio.load(data);
+      thumbnailUrl =
+        $('meta[property="og:image"]').attr("content") ||
+        $('meta[name="twitter:image"]').attr("content") ||
+        null;
+    } catch {
+      // direct fetch also failed — we'll proceed with null thumbnail
+    }
+  }
+
+  return { title, thumbnailUrl, cookTime: null, servings: null };
 }
 
 /** Convert ISO 8601 duration (e.g. "PT1H30M") to human-readable "1 hr 30 min" */

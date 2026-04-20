@@ -4,7 +4,7 @@ import { Trash2, Clock, Users } from "lucide-react";
 import type { MouseEvent } from "react";
 import { RecipeWithTags } from "@/lib/types";
 import styles from "./RecipeList.module.css";
-import { isYouTubeUrl } from "@/lib/recipeExtractor";
+import { isInstagramUrl, isYouTubeUrl } from "@/lib/recipeExtractor";
 
 interface RecipeItemContentProps {
   recipe: RecipeWithTags;
@@ -28,7 +28,12 @@ export function RecipeItemContent({
   const getSourceBadge = () => {
     try {
       const url = new URL(recipe.url);
-      return isYouTubeUrl(url) ? "YouTube" : "Blog";
+      if (isYouTubeUrl(url)) {
+        return "YouTube";
+      } else if (isInstagramUrl(url)) {
+        return "Instagram";
+      }
+      return "Blog";
     } catch {
       return "Blog";
     }
