@@ -203,7 +203,7 @@
   text-align: center;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 770px) {
   .header {
     padding: 1rem 1.25rem;
   }
