@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import styles from "./page.module.css";
 
 type CheckState = "idle" | "checking" | "available" | "unavailable" | "invalid";
@@ -16,6 +17,8 @@ function useDebouncedValue<T>(value: T, delay: number) {
 }
 
 export default function SettingsPage() {
+  const searchParams = useSearchParams();
+  const errorParam = searchParams.get("error");
   const [username, setUsername] = useState("");
   const [initialUsername, setInitialUsername] = useState("");
   const [checkState, setCheckState] = useState<CheckState>("idle");
@@ -135,6 +138,12 @@ export default function SettingsPage() {
   return (
     <div className={styles.page}>
       <h1 className={styles.title}>Settings</h1>
+
+      {errorParam === "username-required" && (
+        <p className={styles.errorBanner}>
+          You need to set a username before you can view your profile.
+        </p>
+      )}
 
       <form className={styles.section} onSubmit={handleSave}>
         <h2 className={styles.sectionTitle}>Public profile</h2>

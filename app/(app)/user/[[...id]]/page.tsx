@@ -82,7 +82,7 @@ export default function ProfilePage() {
       .then(([profileData, recipesData, followData]) => {
         const p = profileData as ProfileData & { error?: string };
         if (p.error && targetUsername) {
-          router.replace("/");
+          router.replace("/settings?error=username-required");
           return;
         }
         if (!p.error) setProfile(p);

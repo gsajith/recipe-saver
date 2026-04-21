@@ -125,6 +125,17 @@
   margin-top: 0.75rem;
 }
 
+.errorBanner {
+  font-size: 0.875rem;
+  color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--danger) 30%, transparent);
+  border-radius: var(--radius-sm);
+  padding: 0.625rem 0.875rem;
+  max-width: 480px;
+  margin-bottom: 1.25rem;
+}
+
 .profileLink {
   display: inline-block;
   margin-top: 1rem;
