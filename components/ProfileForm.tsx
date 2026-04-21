@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useUser } from "@clerk/nextjs";
-import { Camera } from "lucide-react";
+import { Camera, X } from "lucide-react";
 import { CropModal } from "./CropModal";
 import styles from "./ProfileForm.module.css";
 
@@ -50,6 +50,7 @@ export function ProfileForm({
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [cropSrc, setCropSrc] = useState<string | null>(null);
+  const [removePhoto, setRemovePhoto] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const checkController = useRef<AbortController | null>(null);
 
@@ -105,7 +106,12 @@ export function ProfileForm({
   const usernameChanged = username.trim() !== initialUsername;
   const displayNameChanged = displayName.trim() !== initialDisplayName;
   // New users (no initialUsername) always count as having changes once they type
-  const hasChanges = usernameChanged || displayNameChanged || !initialUsername || photoFile !== null;
+  const hasChanges =
+    usernameChanged ||
+    displayNameChanged ||
+    !initialUsername ||
+    photoFile !== null ||
+    removePhoto;
 
   const canSubmit =
     !loading &&
@@ -127,8 +133,20 @@ export function ProfileForm({
     if (photoPreview) URL.revokeObjectURL(photoPreview);
     setPhotoFile(croppedFile);
     setPhotoPreview(URL.createObjectURL(croppedFile));
+    setRemovePhoto(false);
     if (cropSrc) URL.revokeObjectURL(cropSrc);
     setCropSrc(null);
+  };
+
+  const handleRemovePhoto = () => {
+    if (photoFile) {
+      // Just cancel the pending upload — revert to the saved Clerk photo
+      if (photoPreview) URL.revokeObjectURL(photoPreview);
+      setPhotoFile(null);
+      setPhotoPreview(null);
+    } else {
+      setRemovePhoto(true);
+    }
   };
 
   const handleCropCancel = () => {
@@ -141,7 +159,9 @@ export function ProfileForm({
     if (!canSubmit) return;
     setSaving(true);
     try {
-      if (photoFile && user) {
+      if (removePhoto && user) {
+        await user.setProfileImage({ file: null });
+      } else if (photoFile && user) {
         await user.setProfileImage({ file: photoFile });
       }
       const res = await fetch("/api/users/me", {
@@ -201,93 +221,131 @@ export function ProfileForm({
     return styles.input;
   };
 
-  const avatarSrc = photoPreview ?? user?.imageUrl ?? null;
+  const savedImageUrl = user?.imageUrl ?? null;
+  const avatarSrc = photoPreview ?? savedImageUrl;
   const avatarInitial = (displayName || username || "?")[0].toUpperCase();
+  // Only offer remove when there's an actual custom photo (not just Clerk's generated default)
+  const hasCustomPhoto = photoFile !== null || (user?.hasImage ?? false);
+  const canRemove = !removePhoto && hasCustomPhoto;
 
   return (
     <>
-    {cropSrc && (
-      <CropModal
-        imageSrc={cropSrc}
-        onConfirm={handleCropConfirm}
-        onCancel={handleCropCancel}
-      />
-    )}
-    <form className={className} onSubmit={handleSubmit}>
-      <div className={styles.avatarSection}>
-        <button
-          type="button"
-          className={styles.avatarBtn}
-          onClick={() => fileInputRef.current?.click()}
-          aria-label="Change profile photo">
-          {avatarSrc ? (
-            <img src={avatarSrc} alt="" className={styles.avatarImg} />
-          ) : (
-            <div className={styles.avatarInitial}>{avatarInitial}</div>
-          )}
-          <div className={styles.avatarOverlay}>
-            <Camera size={16} />
-          </div>
-        </button>
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*"
-          className={styles.avatarInput}
-          onChange={handlePhotoChange}
+      {cropSrc && (
+        <CropModal
+          imageSrc={cropSrc}
+          onConfirm={handleCropConfirm}
+          onCancel={handleCropCancel}
         />
-      </div>
-
-      <div className={styles.field}>
-        <label className={styles.label} htmlFor="username">
-          Username
-        </label>
-        <div className={styles.inputWrap}>
-          <span className={styles.prefix}>@</span>
+      )}
+      <form className={className} onSubmit={handleSubmit}>
+        <div className={styles.avatarSection}>
+          <button
+            type="button"
+            className={`${styles.avatarBtn}${removePhoto ? ` ${styles.avatarBtnRemoving}` : ""}`}
+            onClick={() => !removePhoto && fileInputRef.current?.click()}
+            aria-label="Change profile photo">
+            {avatarSrc ? (
+              <img src={avatarSrc} alt="" className={styles.avatarImg} />
+            ) : (
+              <div className={styles.avatarInitial}>{avatarInitial}</div>
+            )}
+            {removePhoto ? (
+              <div
+                className={`${styles.avatarOverlay} ${styles.avatarOverlayRemove}`}>
+                <X size={28} />
+              </div>
+            ) : (
+              <div className={styles.avatarOverlay}>
+                <Camera size={32} />
+              </div>
+            )}
+          </button>
           <input
-            id="username"
-            className={`${usernameInputClass()} ${styles.inputWithPrefix}`}
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            className={styles.avatarInput}
+            onChange={handlePhotoChange}
+          />
+          {!removePhoto && (
+            <span className={styles.avatarHint}>
+              Click to change photo
+            </span>
+          )}
+          <div className={styles.avatarActions}>
+            {canRemove && (
+              <button
+                type="button"
+                className={styles.avatarActionBtn}
+                onClick={handleRemovePhoto}>
+                Remove photo
+              </button>
+            )}
+            {removePhoto && (
+              <button
+                type="button"
+                className={`${styles.avatarActionBtn} ${styles.avatarActionBtnUndo}`}
+                onClick={() => setRemovePhoto(false)}>
+                Undo remove photo
+              </button>
+            )}
+          </div>
+        </div>
+
+        <div className={styles.field}>
+          <label className={styles.label} htmlFor="username">
+            Username
+          </label>
+          <div className={styles.inputWrap}>
+            <span className={styles.prefix}>@</span>
+            <input
+              id="username"
+              className={`${usernameInputClass()} ${styles.inputWithPrefix}`}
+              type="text"
+              value={username}
+              onChange={(e) =>
+                setUsername(
+                  e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ""),
+                )
+              }
+              placeholder="your_username"
+              maxLength={20}
+              autoComplete="off"
+              autoCapitalize="none"
+              spellCheck={false}
+            />
+          </div>
+          <div>{usernameHint()}</div>
+        </div>
+
+        <div className={styles.field}>
+          <label className={styles.label} htmlFor="displayName">
+            Display name{" "}
+            <span className={styles.labelOptional}>(optional)</span>
+          </label>
+          <input
+            id="displayName"
+            className={styles.input}
             type="text"
-            value={username}
-            onChange={(e) =>
-              setUsername(
-                e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ""),
-              )
-            }
-            placeholder="your_username"
-            maxLength={20}
+            value={displayName}
+            onChange={(e) => setDisplayName(e.target.value)}
+            placeholder="Your name"
+            maxLength={50}
             autoComplete="off"
-            autoCapitalize="none"
             spellCheck={false}
           />
+          <span className={styles.hint}>Shown on your profile page.</span>
         </div>
-        <div>{usernameHint()}</div>
-      </div>
 
-      <div className={styles.field}>
-        <label className={styles.label} htmlFor="displayName">
-          Display name <span className={styles.labelOptional}>(optional)</span>
-        </label>
-        <input
-          id="displayName"
-          className={styles.input}
-          type="text"
-          value={displayName}
-          onChange={(e) => setDisplayName(e.target.value)}
-          placeholder="Your name"
-          maxLength={50}
-          autoComplete="off"
-          spellCheck={false}
-        />
-        <span className={styles.hint}>Shown on your profile page.</span>
-      </div>
+        <button
+          type="submit"
+          className={styles.submitBtn}
+          disabled={!canSubmit}>
+          {saving ? "Saving…" : submitLabel}
+        </button>
 
-      <button type="submit" className={styles.submitBtn} disabled={!canSubmit}>
-        {saving ? "Saving…" : submitLabel}
-      </button>
-
-      {footer}
-    </form>
+        {footer}
+      </form>
     </>
   );
 }

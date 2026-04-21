@@ -15,9 +15,9 @@
 }
 
 .avatarContainer {
-  flex-grow: 1;
-  max-width: 320px;
-  height: 100%;
+  flex-shrink: 0;
+  width: min(320px, 40vw);
+  aspect-ratio: 1;
   overflow: hidden;
   border: 40px solid var(--primary);
   border-radius: 50%;
