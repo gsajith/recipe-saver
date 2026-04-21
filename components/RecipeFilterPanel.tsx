@@ -4,12 +4,12 @@ import { useEffect, useState } from "react";
 import { LayoutGrid, List } from "lucide-react";
 import { SearchBar } from "@/components/SearchBar";
 import { RecipeList } from "@/components/RecipeList";
-import type { RecipeWithTags } from "@/lib/types";
+import type { Recipe } from "@/lib/types";
 import styles from "./RecipeFilterPanel.module.css";
 
 interface RecipeFilterPanelProps {
-  recipes: RecipeWithTags[];
-  onRecipeSelect: (recipe: RecipeWithTags) => void;
+  recipes: Recipe[];
+  onRecipeSelect: (recipe: Recipe) => void;
   onRecipeDelete?: (recipeId: string) => Promise<void>;
   theme?: "light" | "inverted";
   /** Extra content rendered at the end of the controls row (e.g. RecipeForm) */
@@ -45,7 +45,7 @@ export function RecipeFilterPanel({
     filterRecipes(recipes, searchQuery);
   }, [recipes, selectedTags]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  function filterRecipes(recipesList: RecipeWithTags[], query: string) {
+  function filterRecipes(recipesList: Recipe[], query: string) {
     let filtered = recipesList;
     if (query.trim()) {
       const lowerQuery = query.toLowerCase();
@@ -93,13 +93,19 @@ export function RecipeFilterPanel({
         <SearchBar onSearch={handleSearch} />
         <div className={styles.viewToggle}>
           <button
-            onClick={(e) => { e.stopPropagation(); setViewMode("grid"); }}
+            onClick={(e) => {
+              e.stopPropagation();
+              setViewMode("grid");
+            }}
             className={`${styles.viewToggleBtn} ${viewMode === "grid" ? styles.viewToggleBtnActive : ""}`}
             title="Grid view">
             <LayoutGrid size={16} />
           </button>
           <button
-            onClick={(e) => { e.stopPropagation(); setViewMode("list"); }}
+            onClick={(e) => {
+              e.stopPropagation();
+              setViewMode("list");
+            }}
             className={`${styles.viewToggleBtn} ${viewMode === "list" ? styles.viewToggleBtnActive : ""}`}
             title="List view">
             <List size={16} />
@@ -116,7 +122,10 @@ export function RecipeFilterPanel({
               .map(([tag]) => (
                 <button
                   key={tag}
-                  onClick={(e) => { e.stopPropagation(); handleTagToggle(tag); }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleTagToggle(tag);
+                  }}
                   className={`${styles.tagFilterBtn} ${selectedTags.includes(tag) ? styles.tagFilterBtnActive : ""}`}>
                   {tag}
                 </button>
@@ -124,7 +133,10 @@ export function RecipeFilterPanel({
             {!allTagsShown && availableTags.length > 8 && (
               <button
                 className={`${styles.tagFilterBtn} ${styles.showAllBtn}`}
-                onClick={(e) => { e.stopPropagation(); setAllTagsShown(true); }}>
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setAllTagsShown(true);
+                }}>
                 … show all tags
               </button>
             )}

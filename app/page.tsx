@@ -7,15 +7,13 @@ import { RecipeForm } from "@/components/RecipeForm";
 import { AppHeader } from "@/components/AppHeader";
 import { RecipeDetail } from "@/components/RecipeDetail";
 import { RecipeFilterPanel } from "@/components/RecipeFilterPanel";
-import { RecipeWithTags } from "@/lib/types";
+import { Recipe } from "@/lib/types";
 import styles from "./page.module.css";
 
 export default function Home() {
   const { user, isLoaded } = useUser();
-  const [recipes, setRecipes] = useState<RecipeWithTags[]>([]);
-  const [selectedRecipe, setSelectedRecipe] = useState<RecipeWithTags | null>(
-    null,
-  );
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
+  const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
   const [clipboardUrl, setClipboardUrl] = useState<string | null>(null);
@@ -79,9 +77,13 @@ export default function Home() {
     }
     setClipboardPreview(null);
     fetch(`/api/recipes/preview?url=${encodeURIComponent(clipboardUrl)}`)
-      .then((r) => r.ok ? r.json() : null)
+      .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
-        if (data) setClipboardPreview({ title: data.title, thumbnailUrl: data.thumbnailUrl });
+        if (data)
+          setClipboardPreview({
+            title: data.title,
+            thumbnailUrl: data.thumbnailUrl,
+          });
       })
       .catch(() => {});
   }, [clipboardUrl]);
@@ -343,7 +345,9 @@ export default function Home() {
           </div>
           <div className={styles.clipboardText}>
             <span className={styles.clipboardTitle}>
-              {clipboardPreview?.title ?? <span className={styles.clipboardTitleLoading} />}
+              {clipboardPreview?.title ?? (
+                <span className={styles.clipboardTitleLoading} />
+              )}
             </span>
             <span className={styles.clipboardUrl}>{clipboardUrl}</span>
           </div>

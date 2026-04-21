@@ -9,13 +9,10 @@ export interface Recipe {
   notes: string | null;
   created_at: string;
   updated_at: string;
-}
-
-export interface RecipeWithTags extends Recipe {
   tags: string[];
 }
 
-export interface FeedRecipe extends RecipeWithTags {
+export interface FeedRecipe extends Recipe {
   attribution_username: string | null;
 }
 

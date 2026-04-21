@@ -2,12 +2,12 @@
 
 import { Trash2, Clock, Users } from "lucide-react";
 import { useRef, useState, type MouseEvent } from "react";
-import { RecipeWithTags } from "@/lib/types";
+import { Recipe } from "@/lib/types";
 import styles from "./RecipeList.module.css";
 import { isInstagramUrl, isYouTubeUrl } from "@/lib/recipeExtractor";
 
 interface RecipeItemContentProps {
-  recipe: RecipeWithTags;
+  recipe: Recipe;
   onDelete: (recipeId: string) => Promise<void>;
   deletingId: string | null;
   viewMode: "grid" | "list";

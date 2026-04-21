@@ -1,14 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { RecipeWithTags } from "@/lib/types";
+import { Recipe } from "@/lib/types";
 import { RecipeCardView } from "./RecipeCardView";
 import { RecipeListView } from "./RecipeListView";
 import styles from "./RecipeList.module.css";
 
 interface RecipeListProps {
-  recipes: RecipeWithTags[];
-  onRecipeSelect: (recipe: RecipeWithTags) => void;
+  recipes: Recipe[];
+  onRecipeSelect: (recipe: Recipe) => void;
   onRecipeDelete: (recipeId: string) => Promise<void>;
   viewMode?: "grid" | "list";
 }

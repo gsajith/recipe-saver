@@ -1,12 +1,12 @@
 "use client";
 
-import { RecipeWithTags } from "@/lib/types";
+import { Recipe } from "@/lib/types";
 import { RecipeItemContent } from "./RecipeItemContent";
 import styles from "./RecipeList.module.css";
 
 interface RecipeListViewProps {
-  recipes: RecipeWithTags[];
-  onRecipeSelect: (recipe: RecipeWithTags) => void;
+  recipes: Recipe[];
+  onRecipeSelect: (recipe: Recipe) => void;
   onDelete: (recipeId: string) => Promise<void>;
   deletingId: string | null;
 }

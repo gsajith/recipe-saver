@@ -12,11 +12,11 @@ import {
   Check,
   Trash2,
 } from "lucide-react";
-import { RecipeWithTags } from "@/lib/types";
+import { Recipe } from "@/lib/types";
 import styles from "./RecipeDetail.module.css";
 
 interface RecipeDetailProps {
-  recipe: RecipeWithTags;
+  recipe: Recipe;
   onTagsUpdate: (recipeId: string, tags: string[]) => Promise<void>;
   onMetadataUpdate?: (
     recipeId: string,
@@ -56,7 +56,10 @@ export function RecipeDetail({
   const handleDelete = () => {
     if (!confirmingDelete) {
       setConfirmingDelete(true);
-      deleteTimeoutRef.current = setTimeout(() => setConfirmingDelete(false), 3000);
+      deleteTimeoutRef.current = setTimeout(
+        () => setConfirmingDelete(false),
+        3000,
+      );
     } else {
       if (deleteTimeoutRef.current) clearTimeout(deleteTimeoutRef.current);
       onDelete?.(recipe.id);
@@ -180,7 +183,9 @@ export function RecipeDetail({
             <button
               className={`${styles.deleteBtn} ${confirmingDelete ? styles.deleteBtnConfirming : ""}`}
               onClick={handleDelete}
-              title={confirmingDelete ? "Tap again to delete" : "Delete recipe"}>
+              title={
+                confirmingDelete ? "Tap again to delete" : "Delete recipe"
+              }>
               <Trash2 size={16} />
               {confirmingDelete && <span>Delete?</span>}
             </button>

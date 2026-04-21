@@ -8,7 +8,7 @@ import { FollowButton } from "@/components/FollowButton";
 import { RecipeFilterPanel } from "@/components/RecipeFilterPanel";
 import styles from "./page.module.css";
 import recipeStyles from "@/components/RecipeList.module.css";
-import type { RecipeWithTags } from "@/lib/types";
+import type { Recipe } from "@/lib/types";
 
 interface ProfileData {
   id: string;
@@ -38,7 +38,7 @@ export default function ProfilePage() {
 
   const [myUsername, setMyUsername] = useState<string | null>(null);
   const [profile, setProfile] = useState<ProfileData | null>(null);
-  const [recipes, setRecipes] = useState<RecipeWithTags[]>([]);
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [isFollowing, setIsFollowing] = useState(false);
   const [followsMe, setFollowsMe] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -86,8 +86,7 @@ export default function ProfilePage() {
           return;
         }
         if (!p.error) setProfile(p);
-        if (Array.isArray(recipesData))
-          setRecipes(recipesData as RecipeWithTags[]);
+        if (Array.isArray(recipesData)) setRecipes(recipesData as Recipe[]);
         if (followData) {
           const f = followData as {
             isFollowing?: boolean;
