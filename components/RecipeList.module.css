@@ -198,34 +198,55 @@
 }
 
 .deleteBtn {
+  background: var(--primary);
   position: absolute;
   top: 0.625rem;
   right: 0.625rem;
-  background: var(--danger);
   color: white;
   border: none;
-  border-radius: 50%;
-  width: 34px;
-  height: 34px;
+  border-radius: var(--radius-full);
+  height: 38px;
+  padding: 0 0.75rem;
   cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-md);
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 0.35rem;
+  flex-shrink: 0;
+  font-weight: 600;
   opacity: 0;
-  transition: all 0.2s ease;
-  box-shadow: var(--shadow-md);
+}
+
+.deleteBtn:hover {
+  background: var(--danger);
+  transform: scale(1.05);
+}
+
+.deleteBtnConfirming {
+  background: var(--danger);
+  animation: deletePulse 0.6s ease;
+}
+
+.deleteBtnConfirming:hover {
+  background: var(--danger);
+}
+
+@keyframes deletePulse {
+  0% {
+    transform: scale(1);
+  }
+
+  40% {
+    transform: scale(1.08);
+  }
+
+  100% {
+    transform: scale(1);
+  }
 }
 
 .recipeCard:hover .deleteBtn {
   opacity: 1;
-}
-
-.deleteBtn:hover {
-  background: #a33020;
-  transform: scale(1.1);
-}
-
-.deleteBtn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
 }

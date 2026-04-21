@@ -1,7 +1,7 @@
 "use client";
 
 import { Trash2, Clock, Users } from "lucide-react";
-import type { MouseEvent } from "react";
+import { useRef, useState, type MouseEvent } from "react";
 import { RecipeWithTags } from "@/lib/types";
 import styles from "./RecipeList.module.css";
 import { isInstagramUrl, isYouTubeUrl } from "@/lib/recipeExtractor";
@@ -19,10 +19,21 @@ export function RecipeItemContent({
   deletingId,
   viewMode,
 }: RecipeItemContentProps) {
-  const handleDelete = async (e: MouseEvent<HTMLButtonElement>) => {
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const deleteTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleDelete = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    if (!confirm("Are you sure you want to delete this recipe?")) return;
-    await onDelete(recipe.id);
+    if (!confirmingDelete) {
+      setConfirmingDelete(true);
+      deleteTimeoutRef.current = setTimeout(
+        () => setConfirmingDelete(false),
+        3000,
+      );
+    } else {
+      if (deleteTimeoutRef.current) clearTimeout(deleteTimeoutRef.current);
+      onDelete(recipe.id);
+    }
   };
 
   const getSourceBadge = () => {
@@ -112,11 +123,11 @@ export function RecipeItemContent({
       </div>
 
       <button
-        className={styles.deleteBtn}
+        className={`${styles.deleteBtn} ${confirmingDelete ? styles.deleteBtnConfirming : ""}`}
         onClick={handleDelete}
-        disabled={deletingId === recipe.id}
-        title="Delete recipe">
-        <Trash2 size={18} />
+        title={confirmingDelete ? "Tap again to delete" : "Delete recipe"}>
+        <Trash2 size={16} />
+        {confirmingDelete && <span>Delete?</span>}
       </button>
     </>
   );
