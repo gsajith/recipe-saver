@@ -150,8 +150,7 @@ async function extractInstagramMeta(url: URL): Promise<RecipeMetadata> {
   const headers = {
     "User-Agent":
       "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
-    Accept:
-      "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
     "Accept-Language": "en-US,en;q=0.9",
     "Accept-Encoding": "gzip, deflate, br",
     Connection: "keep-alive",
@@ -187,7 +186,7 @@ async function extractInstagramMeta(url: URL): Promise<RecipeMetadata> {
     // fetch failed — proceed with null thumbnail and fallback title
   }
 
-  const extracted = await extractMetaFromCaption(caption, fallbackTitle);
+  const extracted = await extractMetadataFromCaption(caption, fallbackTitle);
   return { ...extracted, thumbnailUrl };
 }
 
@@ -213,7 +212,7 @@ function extractInstagramCleanThumbnail(html: string): string | null {
  * an Instagram caption. Falls back gracefully if the key isn't set or the
  * call fails.
  */
-async function extractMetaFromCaption(
+async function extractMetadataFromCaption(
   caption: string | null,
   fallbackTitle: string,
 ): Promise<Omit<RecipeMetadata, "thumbnailUrl">> {
@@ -244,7 +243,10 @@ ${caption}`,
 
     const block = response.content[0];
     if (block.type === "text") {
-      const raw = block.text.trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "");
+      const raw = block.text
+        .trim()
+        .replace(/^```(?:json)?\s*/i, "")
+        .replace(/\s*```$/, "");
       const parsed = JSON.parse(raw);
       return {
         title: parsed.title || fallbackTitle,
