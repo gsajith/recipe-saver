@@ -3,6 +3,7 @@
 import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import { Share, Check } from "lucide-react";
 import { FollowButton } from "@/components/FollowButton";
 import styles from "./page.module.css";
 import type { RecipeWithTags } from "@/lib/types";
@@ -30,6 +31,7 @@ export default function ProfilePage() {
   const [isFollowing, setIsFollowing] = useState(false);
   const [followsMe, setFollowsMe] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [shareCopied, setShareCopied] = useState(false);
 
   useEffect(() => {
     fetch("/api/users/me")
@@ -93,6 +95,13 @@ export default function ProfilePage() {
   const followingCount = profile?.following_count ?? 0;
   const recipeCount = recipes.length;
 
+  const handleShare = async () => {
+    const url = `${window.location.origin}/user/${displayUsername}`;
+    await navigator.clipboard.writeText(url);
+    setShareCopied(true);
+    setTimeout(() => setShareCopied(false), 2500);
+  };
+
   const fanRecipes = recipes.slice(0, MAX_FAN);
   const extraCount = Math.max(0, recipeCount - MAX_FAN);
   const fanTotal = fanRecipes.length + (extraCount > 0 ? 1 : 0);
@@ -111,7 +120,20 @@ export default function ProfilePage() {
         <div className={styles.avatarContainer}>{avatarEl}</div>
         <div className={styles.profileCard}>
           <div className={styles.cardInfo}>
-            <h1 className={styles.name}>{displayName}</h1>
+            <div className={styles.nameRow}>
+              <h1 className={styles.name}>{displayName}</h1>
+              <div className={styles.shareBtnWrap}>
+                <button
+                  className={`${styles.shareBtn} ${shareCopied ? styles.shareBtnCopied : ""}`}
+                  onClick={handleShare}
+                  title={shareCopied ? "Link copied!" : "Share profile"}>
+                  {shareCopied ? <Check size={16} /> : <Share size={16} />}
+                </button>
+                {shareCopied && (
+                  <span className={styles.copiedLabel}>Link copied!</span>
+                )}
+              </div>
+            </div>
             <div className={styles.stats}>
               <div>
                 <span className={styles.statCount}>{followerCount}</span>

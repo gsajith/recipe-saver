@@ -79,6 +79,63 @@
   background: white;
 }
 
+.nameRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.shareBtnWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.shareBtn {
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.15s, transform 0.15s;
+  box-shadow: var(--shadow-sm);
+}
+
+.shareBtn:hover {
+  background: var(--primary-dark);
+  transform: scale(1.1);
+}
+
+.shareBtnCopied {
+  background: var(--orange);
+}
+
+.shareBtnCopied:hover {
+  background: var(--orange-dark) !important;
+}
+
+.copiedLabel {
+  position: absolute;
+  left: calc(100% + 0.5rem);
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--primary);
+  color: white;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.3rem 0.7rem;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
 .name {
   font-family: var(--font-serif), Georgia, serif;
   font-size: clamp(1.5rem, 5.5vw, 3.5rem);
