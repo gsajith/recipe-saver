@@ -260,32 +260,6 @@
   box-shadow: 0 0 0 3px rgba(30, 61, 47, 0.1);
 }
 
-.addBtn {
-  padding: 0.75rem 1.125rem;
-  background: var(--primary);
-  color: white;
-  border: none;
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  font-weight: 600;
-  transition: all 0.2s ease;
-  box-shadow: var(--shadow-sm);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.addBtn:hover:not(:disabled) {
-  background: var(--primary-dark);
-  box-shadow: var(--shadow-md);
-}
-
-.addBtn:disabled {
-  background: var(--surface-variant);
-  color: var(--text-secondary);
-  cursor: not-allowed;
-}
-
 .tagsList {
   display: flex;
   flex-wrap: wrap;
