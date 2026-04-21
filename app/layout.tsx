@@ -25,6 +25,18 @@ export const metadata: Metadata = {
     icon: "/favicon.ico",
     apple: "/apple-touch-icon.png",
   },
+  openGraph: {
+    title: "RecipeBox",
+    description: "Every recipe you love, beautifully saved.",
+    url: process.env.NEXT_PUBLIC_APP_URL ?? "https://recipe-box-gs.vercel.app",
+    siteName: "RecipeBox",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "RecipeBox",
+    description: "Every recipe you love, beautifully saved.",
+  },
   other: {
     "theme-color": "#234b39",
     "apple-mobile-web-app-capable": "yes",

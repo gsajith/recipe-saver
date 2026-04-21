@@ -9,6 +9,8 @@ const isPublicRoute = createRouteMatcher([
   "/share/(.*)",     // shared recipe pages (public, no auth required to view)
   "/api/share/(.*)", // public share data endpoint
   "/share-target(.*)", // PWA share target — auth handled in the page itself
+  "/opengraph-image(.*)", // OG image — must be public for link previews
+  "/twitter-image(.*)",   // Twitter card image
 ]);
 
 export const proxy = clerkMiddleware(async (auth, req) => {

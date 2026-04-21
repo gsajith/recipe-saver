@@ -163,7 +163,7 @@
 }
 
 .recipesContainerClickable:hover {
-  filter: brightness(1.06);
+  filter: brightness(1.1);
 }
 
 .recipesContainerExpanded {
