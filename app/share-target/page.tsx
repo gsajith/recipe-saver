@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { ExternalLink } from "lucide-react";
@@ -32,6 +32,21 @@ function extractUrl(
 }
 
 export default function ShareTargetPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className={styles.page}>
+          <div className={styles.card}>
+            <p className={styles.statusText}>Loading...</p>
+          </div>
+        </div>
+      }>
+      <ShareTargetContent />
+    </Suspense>
+  );
+}
+
+function ShareTargetContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { isLoaded, isSignedIn } = useUser();
