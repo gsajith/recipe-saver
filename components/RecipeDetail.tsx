@@ -160,33 +160,35 @@ export function RecipeDetail({
   return (
     <div className={styles.modalOverlay} onClick={onClose}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-        {/* Top-right: share + close */}
-        <div className={styles.topRight}>
-          {shareCopied && (
-            <span className={styles.copiedLabel}>Link copied!</span>
-          )}
-          <button
-            className={`${styles.shareBtn} ${shareCopied ? styles.shareBtnCopied : ""}`}
-            onClick={handleShare}
-            title={shareCopied ? "Link copied!" : "Share recipe"}>
-            {shareCopied ? <Check size={16} /> : <Share size={16} />}
+        {/* Nav bar — absolutely positioned on desktop (floats over image),
+            sticky on mobile so it stays visible while scrolling */}
+        <div className={styles.navBar}>
+          <button className={styles.backBtn} onClick={onClose}>
+            <ArrowLeft size={17} />
+            Back
           </button>
-          <button
-            className={`${styles.deleteBtn} ${confirmingDelete ? styles.deleteBtnConfirming : ""}`}
-            onClick={handleDelete}
-            title={confirmingDelete ? "Tap again to delete" : "Delete recipe"}>
-            <Trash2 size={16} />
-            {confirmingDelete && <span>Delete?</span>}
-          </button>
-          <button className={styles.closeBtn} onClick={onClose} title="Close">
-            <X size={20} />
-          </button>
+          <div className={styles.topRight}>
+            {shareCopied && (
+              <span className={styles.copiedLabel}>Link copied!</span>
+            )}
+            <button
+              className={`${styles.shareBtn} ${shareCopied ? styles.shareBtnCopied : ""}`}
+              onClick={handleShare}
+              title={shareCopied ? "Link copied!" : "Share recipe"}>
+              {shareCopied ? <Check size={16} /> : <Share size={16} />}
+            </button>
+            <button
+              className={`${styles.deleteBtn} ${confirmingDelete ? styles.deleteBtnConfirming : ""}`}
+              onClick={handleDelete}
+              title={confirmingDelete ? "Tap again to delete" : "Delete recipe"}>
+              <Trash2 size={16} />
+              {confirmingDelete && <span>Delete?</span>}
+            </button>
+            <button className={styles.closeBtn} onClick={onClose} title="Close">
+              <X size={20} />
+            </button>
+          </div>
         </div>
-        {/* Mobile back button */}
-        <button className={styles.backBtn} onClick={onClose}>
-          <ArrowLeft size={17} />
-          Back
-        </button>
 
         <div className={styles.header}>
           {recipe.thumbnail_url && (

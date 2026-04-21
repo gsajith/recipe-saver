@@ -25,13 +25,27 @@
   border: 1.5px solid var(--border);
 }
 
-.topRight {
+/* Desktop: navBar floats over the header image, absolutely positioned */
+.navBar {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 1rem;
+  pointer-events: none;
+}
+
+.navBar > * {
+  pointer-events: auto;
+}
+
+.topRight {
   display: flex;
   gap: 0.5rem;
-  z-index: 10;
 }
 
 .closeBtn {
@@ -535,6 +549,39 @@
     -webkit-backdrop-filter: blur(6px);
   }
 
+  /* On mobile the navBar becomes sticky so it stays visible while scrolling.
+     Pull the header image up behind the transparent navBar (navBar height =
+     0.75rem top + 38px button + 0.75rem bottom ≈ 62px) so the buttons appear
+     to float over the photo rather than sitting above a blank background. */
+  .navBar {
+    position: sticky;
+    top: 0;
+    padding: 0.75rem 1rem;
+    pointer-events: auto;
+    background: transparent;
+    z-index: 10;
+  }
+
+  .header {
+    margin-top: -62px;
+  }
+
+  .backBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: rgba(0, 0, 0, 0.72);
+    color: white;
+    border: none;
+    border-radius: var(--radius-full);
+    padding: 0.45rem 0.875rem 0.45rem 0.6rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+
   .shareBtn {
     background: rgba(0, 0, 0, 0.72);
     box-shadow: none;
@@ -565,26 +612,6 @@
 
   .deleteBtnConfirming {
     background: rgba(201, 72, 50, 0.9);
-  }
-
-  .backBtn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    position: absolute;
-    top: 1rem;
-    left: 1rem;
-    z-index: 10;
-    background: rgba(0, 0, 0, 0.72);
-    color: white;
-    border: none;
-    border-radius: var(--radius-full);
-    padding: 0.45rem 0.875rem 0.45rem 0.6rem;
-    font-size: 0.875rem;
-    font-weight: 600;
-    cursor: pointer;
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
   }
 }
 
