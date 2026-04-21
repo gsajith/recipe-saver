@@ -10,6 +10,20 @@ import { RecipeFilterPanel } from "@/components/RecipeFilterPanel";
 import { Recipe } from "@/lib/types";
 import styles from "./page.module.css";
 
+function getShareToken(url: string): string | null {
+  try {
+    const u = new URL(url);
+    const isRecipeBox =
+      (u.hostname === "localhost" && u.port === "3000") ||
+      u.hostname === "recipe-box-gs.vercel.app";
+    if (!isRecipeBox) return null;
+    const match = u.pathname.match(/^\/share\/([a-zA-Z0-9]+)$/);
+    return match?.[1] ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export default function Home() {
   const { user, isLoaded } = useUser();
   const [recipes, setRecipes] = useState<Recipe[]>([]);
@@ -20,8 +34,14 @@ export default function Home() {
   const [clipboardPreview, setClipboardPreview] = useState<{
     title: string | null;
     thumbnailUrl: string | null;
+    sharerUsername?: string | null;
+    originalUrl?: string;
   } | null>(null);
   const lastOfferedUrl = useRef<string | null>(null);
+  const recipesRef = useRef(recipes);
+  useEffect(() => {
+    recipesRef.current = recipes;
+  }, [recipes]);
 
   // Check clipboard for a URL when the app comes to the foreground
   useEffect(() => {
@@ -33,6 +53,10 @@ export default function Home() {
         const trimmed = text?.trim();
         if (!trimmed?.match(/^https?:\/\//)) return;
         if (trimmed === lastOfferedUrl.current) return;
+        if (recipesRef.current.some((r) => r.url === trimmed)) {
+          lastOfferedUrl.current = trimmed;
+          return;
+        }
         setClipboardUrl(trimmed);
       } catch {
         // Clipboard access denied or unavailable — ignore silently
@@ -76,23 +100,67 @@ export default function Home() {
       return;
     }
     setClipboardPreview(null);
-    fetch(`/api/recipes/preview?url=${encodeURIComponent(clipboardUrl)}`)
-      .then((r) => (r.ok ? r.json() : null))
-      .then((data) => {
-        if (data)
+    const shareToken = getShareToken(clipboardUrl);
+    if (shareToken) {
+      fetch(`/api/share/${shareToken}`)
+        .then((r) => (r.ok ? r.json() : null))
+        .then((data) => {
+          if (!data) return;
+          if (data.is_own) {
+            setClipboardUrl(null);
+            lastOfferedUrl.current = clipboardUrl;
+            return;
+          }
           setClipboardPreview({
             title: data.title,
-            thumbnailUrl: data.thumbnailUrl,
+            thumbnailUrl: data.thumbnail_url,
+            sharerUsername: data.sharer_username,
+            originalUrl: data.url,
           });
-      })
-      .catch(() => {});
+        })
+        .catch(() => {});
+    } else {
+      fetch(`/api/recipes/preview?url=${encodeURIComponent(clipboardUrl)}`)
+        .then((r) => (r.ok ? r.json() : null))
+        .then((data) => {
+          if (data)
+            setClipboardPreview({
+              title: data.title,
+              thumbnailUrl: data.thumbnailUrl,
+            });
+        })
+        .catch(() => {});
+    }
   }, [clipboardUrl]);
 
   const handleSaveFromClipboard = async () => {
     if (!clipboardUrl) return;
     lastOfferedUrl.current = clipboardUrl;
     setClipboardUrl(null);
-    await handleAddRecipe(clipboardUrl);
+    const shareToken = getShareToken(clipboardUrl);
+    if (shareToken) {
+      await handleSaveFromShare(shareToken);
+    } else {
+      await handleAddRecipe(clipboardUrl);
+    }
+  };
+
+  const handleSaveFromShare = async (token: string) => {
+    setIsLoading(true);
+    try {
+      const response = await fetch(`/api/share/${token}/save`, {
+        method: "POST",
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to save recipe");
+      }
+      const newRecipe = await response.json();
+      setRecipes((prev) => [newRecipe, ...prev]);
+      setSelectedRecipe(newRecipe);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleDismissClipboard = () => {
@@ -334,37 +402,59 @@ export default function Home() {
         />
       )}
 
-      {clipboardUrl && (
-        <div className={styles.clipboardBanner}>
-          <div className={styles.clipboardThumb}>
-            {clipboardPreview?.thumbnailUrl ? (
-              <img src={clipboardPreview.thumbnailUrl} alt="" />
-            ) : (
-              <Clipboard size={16} className={styles.clipboardIcon} />
-            )}
-          </div>
-          <div className={styles.clipboardText}>
-            <span className={styles.clipboardTitle}>
-              {clipboardPreview?.title ?? (
-                <span className={styles.clipboardTitleLoading} />
+      {clipboardUrl &&
+        !isFetching &&
+        !recipes.some((r) => r.url === (clipboardPreview?.originalUrl ?? clipboardUrl)) &&
+        (!getShareToken(clipboardUrl) || clipboardPreview) && (
+          <div className={styles.clipboardBanner}>
+            <div className={styles.clipboardThumb}>
+              {clipboardPreview?.thumbnailUrl ? (
+                <img src={clipboardPreview.thumbnailUrl} alt="" />
+              ) : (
+                <Clipboard size={16} className={styles.clipboardIcon} />
               )}
-            </span>
-            <span className={styles.clipboardUrl}>{clipboardUrl}</span>
+            </div>
+            <div className={styles.clipboardText}>
+              <span className={styles.clipboardTitle}>
+                {clipboardPreview?.title ?? (
+                  <span className={styles.clipboardTitleLoading} />
+                )}
+              </span>
+              {clipboardPreview && "sharerUsername" in clipboardPreview ? (
+                <span className={styles.clipboardAttribution}>
+                  {clipboardPreview.sharerUsername ? (
+                    <>
+                      <span>
+                        <a
+                          href={`/user/${clipboardPreview.sharerUsername}`}
+                          className={styles.clipboardAttributionLink}>
+                          @{clipboardPreview.sharerUsername}
+                        </a>
+                        {" shared this with you!"}
+                      </span>
+                    </>
+                  ) : (
+                    "A RecipeBox user shared this with you!"
+                  )}
+                </span>
+              ) : (
+                <span className={styles.clipboardUrl}>{clipboardUrl}</span>
+              )}
+            </div>
+            <button
+              className={styles.clipboardSaveBtn}
+              onClick={handleSaveFromClipboard}
+              disabled={isLoading}>
+              {isLoading ? "Saving…" : "Save"}
+            </button>
+            <button
+              className={styles.clipboardDismissBtn}
+              onClick={handleDismissClipboard}
+              aria-label="Dismiss">
+              <X size={14} />
+            </button>
           </div>
-          <button
-            className={styles.clipboardSaveBtn}
-            onClick={handleSaveFromClipboard}
-            disabled={isLoading}>
-            {isLoading ? "Saving…" : "Save"}
-          </button>
-          <button
-            className={styles.clipboardDismissBtn}
-            onClick={handleDismissClipboard}
-            aria-label="Dismiss">
-            <X size={14} />
-          </button>
-        </div>
-      )}
+        )}
     </div>
   );
 }

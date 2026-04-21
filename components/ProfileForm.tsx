@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useUser } from "@clerk/nextjs";
+import { Camera } from "lucide-react";
 import styles from "./ProfileForm.module.css";
 
 type CheckState = "idle" | "checking" | "available" | "unavailable" | "invalid";
@@ -39,11 +41,22 @@ export function ProfileForm({
   footer,
   className,
 }: ProfileFormProps) {
+  const { user } = useUser();
   const [username, setUsername] = useState(initialUsername);
   const [displayName, setDisplayName] = useState(initialDisplayName);
   const [checkState, setCheckState] = useState<CheckState>("idle");
   const [saving, setSaving] = useState(false);
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const checkController = useRef<AbortController | null>(null);
+
+  // Clean up object URL when component unmounts or preview changes
+  useEffect(() => {
+    return () => {
+      if (photoPreview) URL.revokeObjectURL(photoPreview);
+    };
+  }, [photoPreview]);
 
   // Sync state when parent provides initial values after an async load
   useEffect(() => {
@@ -84,7 +97,7 @@ export function ProfileForm({
   const usernameChanged = username.trim() !== initialUsername;
   const displayNameChanged = displayName.trim() !== initialDisplayName;
   // New users (no initialUsername) always count as having changes once they type
-  const hasChanges = usernameChanged || displayNameChanged || !initialUsername;
+  const hasChanges = usernameChanged || displayNameChanged || !initialUsername || photoFile !== null;
 
   const canSubmit =
     !loading &&
@@ -93,11 +106,22 @@ export function ProfileForm({
     username.trim().length > 0 &&
     (checkState === "available" || username.trim() === initialUsername);
 
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (photoPreview) URL.revokeObjectURL(photoPreview);
+    setPhotoFile(file);
+    setPhotoPreview(URL.createObjectURL(file));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!canSubmit) return;
     setSaving(true);
     try {
+      if (photoFile && user) {
+        await user.setProfileImage({ file: photoFile });
+      }
       const res = await fetch("/api/users/me", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -155,8 +179,35 @@ export function ProfileForm({
     return styles.input;
   };
 
+  const avatarSrc = photoPreview ?? user?.imageUrl ?? null;
+  const avatarInitial = (displayName || username || "?")[0].toUpperCase();
+
   return (
     <form className={className} onSubmit={handleSubmit}>
+      <div className={styles.avatarSection}>
+        <button
+          type="button"
+          className={styles.avatarBtn}
+          onClick={() => fileInputRef.current?.click()}
+          aria-label="Change profile photo">
+          {avatarSrc ? (
+            <img src={avatarSrc} alt="" className={styles.avatarImg} />
+          ) : (
+            <div className={styles.avatarInitial}>{avatarInitial}</div>
+          )}
+          <div className={styles.avatarOverlay}>
+            <Camera size={16} />
+          </div>
+        </button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          className={styles.avatarInput}
+          onChange={handlePhotoChange}
+        />
+      </div>
+
       <div className={styles.field}>
         <label className={styles.label} htmlFor="username">
           Username

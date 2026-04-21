@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs/server";
 import { supabaseServer as supabase } from "@/lib/supabase";
 
 export async function GET(
@@ -6,6 +7,7 @@ export async function GET(
   { params }: { params: Promise<{ token: string }> },
 ) {
   try {
+    const { userId } = await auth();
     const { token } = await params;
 
     // Look up recipe by share token
@@ -41,6 +43,7 @@ export async function GET(
       servings: recipe.servings,
       tags: tagRows?.map((r) => r.tag) ?? [],
       sharer_username: profile?.username ?? null,
+      is_own: userId != null && userId === recipe.user_id,
     });
   } catch (error) {
     console.error("Error fetching shared recipe:", error);

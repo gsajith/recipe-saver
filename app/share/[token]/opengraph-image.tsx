@@ -21,15 +21,22 @@ export default async function Image({
     readFile(join(process.cwd(), "assets/PlayfairDisplay-ExtraBold.ttf")),
     supabase
       .from("recipes")
-      .select("title, thumbnail_url, cook_time, servings")
+      .select("title, thumbnail_url, cook_time, servings, user_id")
       .eq("share_token", token)
+      .single(),
+  ]);
+
+  const [{ data: user }] = await Promise.all([
+    supabase
+      .from("user_profiles")
+      .select("username")
+      .eq("clerk_user_id", recipe?.user_id)
       .single(),
   ]);
 
   const title = recipe?.title ?? "A shared recipe";
   const thumbnail = recipe?.thumbnail_url ?? null;
-  const cookTime = recipe?.cook_time ?? null;
-  const servings = recipe?.servings ?? null;
+  const username = user?.username ? `@${user?.username}` : "A user";
 
   return new ImageResponse(
     <div
@@ -57,7 +64,7 @@ export default async function Image({
       {thumbnail ? (
         <div
           style={{
-            width: 480,
+            width: 750,
             height: "100%",
             flexShrink: 0,
             position: "relative",
@@ -81,10 +88,9 @@ export default async function Image({
               top: 0,
               right: 0,
               bottom: 0,
-              width: 80,
+              width: 280,
               display: "flex",
-              background:
-                "linear-gradient(to right, transparent, #234b39)",
+              background: "linear-gradient(to right, transparent, #234b39)",
             }}
           />
         </div>
@@ -96,72 +102,39 @@ export default async function Image({
           flex: 1,
           display: "flex",
           flexDirection: "column",
-          justifyContent: "space-between",
+          justifyContent: "center",
           padding: thumbnail ? "48px 56px 48px 40px" : "48px 64px",
           position: "relative",
           zIndex: 1,
         }}>
-        {/* Brand */}
+        {/* Recipe title */}
         <span
           style={{
             fontFamily: "Playfair Display",
-            fontSize: 30,
+            fontSize: title.length > 40 ? 44 : 56,
             fontWeight: 800,
-            color: "rgba(250,247,239,0.55)",
-            letterSpacing: "-0.01em",
+            color: "#FAF7EF",
+            lineHeight: 1.15,
+            letterSpacing: "-0.025em",
+            marginBottom: 24,
           }}>
-          RecipeBox
+          {title}
         </span>
 
-        {/* Recipe title */}
+        {/* Footer label */}
         <div
           style={{
             display: "flex",
             flexDirection: "column",
-            gap: 16,
-          }}>
-          <span
-            style={{
-              fontFamily: "Playfair Display",
-              fontSize: title.length > 40 ? 44 : 56,
-              fontWeight: 800,
-              color: "#FAF7EF",
-              lineHeight: 1.15,
-              letterSpacing: "-0.025em",
-            }}>
-            {title}
-          </span>
-
-          {(cookTime || servings) && (
-            <div
-              style={{
-                display: "flex",
-                gap: 20,
-                color: "rgba(250,247,239,0.65)",
-                fontSize: 26,
-                fontFamily: "Playfair Display",
-                fontWeight: 800,
-              }}>
-              {cookTime && <span>{cookTime}</span>}
-              {cookTime && servings && (
-                <span style={{ opacity: 0.4 }}>·</span>
-              )}
-              {servings && <span>{servings}</span>}
-            </div>
-          )}
-        </div>
-
-        {/* Footer label */}
-        <span
-          style={{
-            fontSize: 22,
+            fontSize: 32,
             fontFamily: "Playfair Display",
             fontWeight: 800,
             color: "#F5C73A",
             letterSpacing: "-0.01em",
           }}>
-          Shared via RecipeBox
-        </span>
+          <span>a recipe from &nbsp;</span>
+          <span style={{ color: "#C86C44", fontSize: 38 }}>{username}</span>
+        </div>
       </div>
     </div>,
     {

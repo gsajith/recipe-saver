@@ -393,6 +393,32 @@
   text-overflow: ellipsis;
 }
 
+.clipboardAttribution {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  font-size: 0.72rem;
+  color: rgba(250, 247, 239, 0.6);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.clipboardAttributionLink {
+  color: var(--accent);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.clipboardAttributionLink:hover {
+  text-decoration: underline;
+}
+
+.clipboardShareMeta {
+  font-size: 0.68rem;
+  color: rgba(250, 247, 239, 0.38);
+}
+
 .clipboardSaveBtn {
   flex-shrink: 0;
   padding: 0.4rem 0.875rem;

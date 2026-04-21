@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { supabaseServer as supabase } from "@/lib/supabase";
 import { extractRecipeMetadata } from "@/lib/recipeExtractor";
+import { randomUUID } from "crypto";
 
 export async function POST(req: NextRequest) {
   try {
@@ -18,7 +19,8 @@ export async function POST(req: NextRequest) {
     }
 
     // Extract metadata from URL
-    const { title, thumbnailUrl, cookTime, servings } = await extractRecipeMetadata(url);
+    const { title, thumbnailUrl, cookTime, servings } =
+      await extractRecipeMetadata(url);
 
     // Save recipe to Supabase
     const { data, error } = await supabase
@@ -30,12 +32,14 @@ export async function POST(req: NextRequest) {
         thumbnail_url: thumbnailUrl,
         cook_time: cookTime,
         servings,
+        share_token: randomUUID().replace(/-/g, ""),
       })
       .select()
       .single();
 
     if (error) {
       console.error("Supabase error:", error);
+      // TODO: Open the recipe after error
       // Check for unique constraint violation
       if (error.code === "23505") {
         return NextResponse.json(
