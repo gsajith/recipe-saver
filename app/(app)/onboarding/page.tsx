@@ -36,7 +36,7 @@ export default function OnboardingPage() {
           initialDisplayName={initialDisplayName}
           submitLabel="Continue"
           loading={redirecting}
-          onSuccess={(data) => router.push(`/user/${data.username}`)}
+          onSuccess={(data) => router.replace(`/user/${data.username}`)}
         />
       </div>
     </div>

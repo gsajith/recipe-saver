@@ -36,13 +36,18 @@ export const proxy = clerkMiddleware(async (auth, req) => {
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!,
     );
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("user_profiles")
       .select("username")
       .eq("clerk_user_id", userId)
       .single();
 
-    if (!data?.username) {
+    // PGRST116 = "no rows returned" — user genuinely has no profile yet.
+    // Any other error (connection issue, cold start, etc.) should not redirect,
+    // otherwise a transient Supabase hiccup traps the user in an onboarding loop.
+    const noProfile =
+      error?.code === "PGRST116" || (!error && !data?.username);
+    if (noProfile) {
       return NextResponse.redirect(new URL("/onboarding", req.url));
     }
   }
